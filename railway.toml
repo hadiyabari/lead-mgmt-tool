@@ -1,0 +1,12 @@
+# Railway: DB is only reachable at runtime, not during image build.
+# So prisma migrate deploy runs in startCommand, not buildCommand.
+
+[build]
+builder = "RAILPACK"
+buildCommand = "corepack enable && corepack prepare pnpm@9 --activate && pnpm install --no-frozen-lockfile && pnpm --filter @leadpilot/db exec prisma generate && pnpm --filter @leadpilot/web build"
+
+[deploy]
+startCommand = "pnpm --filter @leadpilot/db exec prisma migrate deploy && pnpm --filter @leadpilot/web start"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"

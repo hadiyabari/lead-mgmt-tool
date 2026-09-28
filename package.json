@@ -15,7 +15,9 @@
     "format:check": "prettier --check .",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
-    "docker:logs": "docker compose logs -f"
+    "docker:logs": "docker compose logs -f",
+    "railway:build": "pnpm --filter @leadpilot/db exec prisma generate && pnpm --filter @leadpilot/web build",
+    "railway:start": "pnpm --filter @leadpilot/db exec prisma migrate deploy && pnpm --filter @leadpilot/web start"
   },
   "devDependencies": {
     "prettier": "^3.4.2",
