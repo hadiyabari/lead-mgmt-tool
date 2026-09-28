@@ -1,17 +1,29 @@
 # LeadPilot Retainer Edition
 
-**Status:** Phase 8–9 complete – source adapters + NPI / Companies House / ABN.
+**Status:** Phase 10–11 complete – enrichment + audit client.
 
-## Sources
+## Enrichment
 
-| Provider | Live requirement |
-|----------|------------------|
-| NPI (US) | None (public CMS API) |
-| Companies House (UK) | `COMPANIES_HOUSE_API_KEY` |
-| ABN Lookup (AU) | `ABN_LOOKUP_GUID` |
+| Provider | Env |
+|----------|-----|
+| Google Places | `GOOGLE_PLACES_API_KEY` |
+| Yelp | `YELP_API_KEY` |
+| Website extract | none (robots-respecting fetch) |
+| Job board | `ADZUNA_APP_ID` (optional) |
 
-UI: `/dashboard/sources` · Discover API defaults to **simulation**.
+`POST /api/leads/:id/enrich`
+
+## Audit
+
+| Env | Purpose |
+|-----|---------|
+| `AUDIT_TOOL_URL` | Agency tool base (`POST /audit`) |
+| `AUDIT_TOOL_API_KEY` | Optional bearer |
+
+`POST /api/leads/:id/audit` · `POST /api/audit` `{ "url": "…" }`
+
+Simulation default when keys/tool missing.
 
 ## Current Phase
 
-**Phase 8–9 – complete.** Next: Phase 10 – Enrichment adapters.
+**Phase 10–11 – complete.** Next: Phase 12 – Scoring model.

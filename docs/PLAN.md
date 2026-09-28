@@ -4,8 +4,8 @@
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| 0–7 | Bootstrap → Ledger UI | **DONE** |
-| 8 | Source Adapter Framework | **DONE** |
-| 9 | Official Registry Adapters | **DONE** |
-| 10 | Enrichment | Pending |
-| 11–25 | Audit → send → book → ship | Pending |
+| 0–9 | Bootstrap → registries | **DONE** |
+| 10 | Enrichment Layer | **DONE** |
+| 11 | Audit Tool Integration | **DONE** |
+| 12 | Scoring Model | Pending |
+| 13–25 | Email → send → book → ship | Pending |
