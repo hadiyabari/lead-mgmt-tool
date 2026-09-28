@@ -4,7 +4,8 @@
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| 0–6 | Bootstrap → Ledger core | **DONE** |
-| 7 | Ledger Imports + UI | **DONE** |
-| 8 | Source Adapter Framework | Pending |
-| 9–25 | Registries → send → book → ship | Pending |
+| 0–7 | Bootstrap → Ledger UI | **DONE** |
+| 8 | Source Adapter Framework | **DONE** |
+| 9 | Official Registry Adapters | **DONE** |
+| 10 | Enrichment | Pending |
+| 11–25 | Audit → send → book → ship | Pending |

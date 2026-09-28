@@ -15,7 +15,8 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/settings') ||
     pathname.startsWith('/api/kill-switch') ||
-    pathname.startsWith('/api/ledger')
+    pathname.startsWith('/api/ledger') ||
+    pathname.startsWith('/api/sources')
   ) {
     const token = await getToken({ req, secret: process.env.AUTH_SECRET });
     if (!token) {
