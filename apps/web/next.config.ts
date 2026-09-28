@@ -2,7 +2,6 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
   transpilePackages: [
     '@leadpilot/shared',
     '@leadpilot/db',
