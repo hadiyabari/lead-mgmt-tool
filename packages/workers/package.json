@@ -7,6 +7,6 @@
     "lint": "echo \"noop\"",
     "typecheck": "echo \"noop\"",
     "test": "echo \"noop\"",
-    "dev": "echo \"Workers will be scaffolded in later phases\""
+    "dev": "echo \"Workers will be scaffolded with the pipeline phases\""
   }
 }

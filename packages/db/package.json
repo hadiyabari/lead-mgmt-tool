@@ -5,7 +5,7 @@
   "scripts": {
     "build": "echo \"noop\"",
     "lint": "echo \"noop\"",
-    "typecheck": "echo \"noop\"",
+    "typecheck": "echo \"noop – schema arrives in Phase 2\"",
     "test": "echo \"noop\""
   }
 }

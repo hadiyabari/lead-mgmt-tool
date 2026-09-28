@@ -10,6 +10,13 @@ Any deviation must be recorded in `HISTORY.md` with a clear reason.
 
 LeadPilot Retainer Edition finds high-value local service businesses (dental / orthodontic, home services, med-spa / aesthetic clinics) in the US, UK and Australia from official public registries, scores them using the agency's own audit tool results, writes grounded audit-based emails, sends only to never-contacted leads under strict compliance rules, and books discovery calls that convert into monthly retainers.
 
+**Agency (editable):** Threezero Agency  
+**Primary domain:** threezero.agency (cold outreach = subdomains only)  
+**Legal footer address:** China Corporation, Main road China scheme, Lahore 54000  
+**LLM provider:** Anthropic  
+**Audit tool:** Exists – URL → structured score + findings  
+**Existing contact lists:** None (ledger starts empty)
+
 ## Target Verticals (v1)
 
 - Dental & Orthodontic clinics
@@ -66,7 +73,7 @@ Entry offer = free or low-cost audit + 30-day quick wins → monthly retainer.
 - Auth: Auth.js with credentials + Google + magic link, MFA (TOTP), password reset
 - Email: multiple providers behind abstraction; secondary domains only
 - Calendar: Google Calendar + Microsoft Graph
-- LLM: OpenAI / Anthropic (structured output + validation)
+- LLM: Anthropic (structured output + validation)
 - Caching: Redis
 - Object storage: S3-compatible
 - Observability: pino, OpenTelemetry
@@ -143,7 +150,7 @@ Organization, SoftwareApplication/Product, FAQPage, Article, BreadcrumbList, How
 | Phase | Title | Status |
 |-------|-------|--------|
 | 0 | Repository Bootstrap and Living Documents | **DONE** |
-| 1 | Monorepo Tooling, CI, Docker, Quality Gates | Pending (awaits human intake) |
+| 1 | Monorepo Tooling, CI, Docker, Quality Gates | **DONE** |
 | 2 | Database Schema Part A: Tenancy, Users, ICP, Sources | Pending |
 | 3 | Database Schema Part B: Leads, Ledger, Messaging, Meetings | Pending |
 | 4 | Authentication, Workspaces, Roles, MFA, Password Reset | Pending |
@@ -175,11 +182,5 @@ Organization, SoftwareApplication/Product, FAQPage, Article, BreadcrumbList, How
 
 1. Create the monorepo and the five living documents exactly as specified in Phase 0. ✅
 2. Commit with a clear message. ✅
-3. Ask the human for the following (in one message):
-   - Agency name, offer description, and current ICP notes
-   - Whether an audit tool API / CLI already exists and its contract
-   - Preferred LLM provider and any existing API keys (do not store them yet)
-   - Sending domains that will be used (secondary domains only)
-   - Postal address for CAN-SPAM / PECR / Spam Act footers
-   - Any existing CSV / Gmail / CRM exports that should seed the ledger
-4. Only after the above answers are received, proceed to Phase 1.
+3. Ask the human for intake answers. ✅ (answered 2026-09-28)
+4. Proceed to Phase 1 only after answers received. ✅

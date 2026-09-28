@@ -12,7 +12,10 @@
     "test": "turbo run test",
     "placeholder-scan": "node scripts/placeholder-scan.mjs",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
   },
   "devDependencies": {
     "prettier": "^3.4.2",
