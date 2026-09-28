@@ -1,6 +1,5 @@
 // LeadPilot Retainer Edition – Prisma schema
-// Phase 2: Tenancy, Users, ICP, Playbooks, SourceConfig
-// Phase 3: Leads, Ledger, Messaging, Meetings, Runs, Cost, Suppression
+// Phase 2–5: tenancy, pipeline, kill switch flag on workspace
 
 generator client {
   provider = "prisma-client-js"
@@ -10,10 +9,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-// ===========================================================================
-// ENUMS
-// ===========================================================================
 
 enum Role {
   OWNER
@@ -135,10 +130,6 @@ enum CostCategory {
   OTHER
 }
 
-// ===========================================================================
-// AUTH.JS COMPATIBLE MODELS
-// ===========================================================================
-
 model User {
   id             String    @id @default(cuid())
   workspaceId    String
@@ -206,16 +197,13 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-// ===========================================================================
-// WORKSPACE
-// ===========================================================================
-
 model Workspace {
   id            String    @id @default(cuid())
   name          String
   slug          String    @unique
   legalAddress  String?
   primaryDomain String?
+  killSwitch    Boolean   @default(false) // Phase 5: stops sending + enrichment when true
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
@@ -234,10 +222,6 @@ model Workspace {
 
   @@map("workspaces")
 }
-
-// ===========================================================================
-// ICP + PLAYBOOK + SOURCE CONFIG (Phase 2)
-// ===========================================================================
 
 model Icp {
   id             String        @id @default(cuid())
@@ -308,38 +292,28 @@ model SourceConfig {
   @@map("source_configs")
 }
 
-// ===========================================================================
-// LEADS + ENRICHMENT + SCORE + AUDIT (Phase 3)
-// ===========================================================================
-
 model Lead {
-  id              String      @id @default(cuid())
-  workspaceId     String
-  // Identity
-  companyName     String
-  normalizedName  String?     // for dedup
-  website         String?
-  domain          String?     // extracted, normalized
-  // Location
-  country         CountryCode?
-  region          String?     // state / county
-  city            String?
-  postalCode      String?
-  address         String?
-  // Classification
-  vertical        Vertical?
-  status          LeadStatus  @default(DISCOVERED)
-  // Provenance
-  sourceProvider  SourceProvider?
-  sourceRef       String?     // registry ID / query ref
-  sourceMeta      Json?       // raw provenance
-  // Contact hints (before full enrichment)
-  primaryEmail    String?
-  primaryPhone    String?
-  // Soft-delete + timestamps
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  deletedAt       DateTime?
+  id             String       @id @default(cuid())
+  workspaceId    String
+  companyName    String
+  normalizedName String?
+  website        String?
+  domain         String?
+  country        CountryCode?
+  region         String?
+  city           String?
+  postalCode     String?
+  address        String?
+  vertical       Vertical?
+  status         LeadStatus   @default(DISCOVERED)
+  sourceProvider SourceProvider?
+  sourceRef      String?
+  sourceMeta     Json?
+  primaryEmail   String?
+  primaryPhone   String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
 
   workspace    Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   enrichments  LeadEnrichment[]
@@ -361,14 +335,13 @@ model Lead {
 model LeadEnrichment {
   id          String   @id @default(cuid())
   leadId      String
-  provider    String   // e.g. google_places, yelp, website
-  // Common enrichment fields
+  provider    String
   rating      Float?
   reviewCount Int?
   website     String?
   phone       String?
   email       String?
-  raw         Json?    // full provider payload
+  raw         Json?
   enrichedAt  DateTime @default(now())
 
   lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
@@ -380,10 +353,9 @@ model LeadEnrichment {
 model LeadScore {
   id          String   @id @default(cuid())
   leadId      String
-  totalScore  Float    // 0–100
-  // Explainable breakdown (weights applied)
-  breakdown   Json     // { audit: 40, rating: 15, reviews: 10, ... }
-  weightsUsed Json?    // snapshot of weights at scoring time
+  totalScore  Float
+  breakdown   Json
+  weightsUsed Json?
   scoredAt    DateTime @default(now())
 
   lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
@@ -394,13 +366,13 @@ model LeadScore {
 }
 
 model AuditResult {
-  id          String   @id @default(cuid())
-  leadId      String
-  url         String   // audited URL
-  score       Float    // 0–100 overall
-  findings    Json     // structured findings from agency audit tool
-  rawReport   Json?    // full report if stored
-  auditedAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  leadId    String
+  url       String
+  score     Float
+  findings  Json
+  rawReport Json?
+  auditedAt DateTime @default(now())
 
   lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
 
@@ -409,24 +381,17 @@ model AuditResult {
   @@map("audit_results")
 }
 
-// ===========================================================================
-// CONTACT HISTORY LEDGER (append-only, single source of truth)
-// ===========================================================================
-
 model ContactHistoryLedger {
   id               String         @id @default(cuid())
   workspaceId      String
-  // Normalized identity – uniqueness enforced per workspace
   normalizedEmail  String?
   normalizedPhone  String?
   domain           String?
-  // Original values
   email            String?
   phone            String?
-  // Provenance
   origin           ContactOrigin
   channel          ContactChannel @default(EMAIL)
-  sourceOfTruth    String?        // e.g. filename, gmail message id
+  sourceOfTruth    String?
   firstContactedAt DateTime
   lastContactedAt  DateTime
   notes            String?
@@ -434,7 +399,6 @@ model ContactHistoryLedger {
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-  // Fast lookups – unique on normalized email/phone per workspace when present
   @@unique([workspaceId, normalizedEmail])
   @@unique([workspaceId, normalizedPhone])
   @@index([workspaceId])
@@ -444,19 +408,15 @@ model ContactHistoryLedger {
   @@map("contact_history_ledger")
 }
 
-// ===========================================================================
-// CAMPAIGNS + SEQUENCES + OUTBOX + SENT + REPLIES
-// ===========================================================================
-
 model Campaign {
-  id          String         @id @default(cuid())
-  workspaceId String
-  playbookId  String?
-  name        String
-  status      CampaignStatus @default(DRAFT)
-  isSimulation Boolean       @default(false)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id           String         @id @default(cuid())
+  workspaceId  String
+  playbookId   String?
+  name         String
+  status       CampaignStatus @default(DRAFT)
+  isSimulation Boolean        @default(false)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
   workspace Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   playbook  Playbook?     @relation(fields: [playbookId], references: [id], onDelete: SetNull)
@@ -474,7 +434,7 @@ model Sequence {
   workspaceId String
   campaignId  String?
   name        String
-  steps       Json     // ordered steps: delay, template ref, etc.
+  steps       Json
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -489,21 +449,18 @@ model Sequence {
 
 model EmailOutbox {
   id           String       @id @default(cuid())
-  workspaceId  String?      // denormalized for queries; cascade via lead/campaign
+  workspaceId  String?
   leadId       String
   campaignId   String?
-  // Content
   toEmail      String
   toName       String?
   subject      String
   bodyHtml     String       @db.Text
   bodyText     String?      @db.Text
-  // Facts used for grounding (validator input)
   factsUsed    Json?
-  // Status + locking for workers
   status       OutboxStatus @default(DRAFT)
   lockedAt     DateTime?
-  lockedBy     String?      // worker id
+  lockedBy     String?
   scheduledAt  DateTime?
   attemptCount Int          @default(0)
   lastError    String?
@@ -522,17 +479,17 @@ model EmailOutbox {
 }
 
 model EmailSent {
-  id           String   @id @default(cuid())
-  leadId       String
-  campaignId   String?
-  outboxId     String?  @unique
-  toEmail      String
-  subject      String
-  bodyHtml     String   @db.Text
+  id                String   @id @default(cuid())
+  leadId            String
+  campaignId        String?
+  outboxId          String?  @unique
+  toEmail           String
+  subject           String
+  bodyHtml          String   @db.Text
   providerMessageId String?
-  mailboxId    String?  // which secondary domain mailbox
-  sentAt       DateTime @default(now())
-  isSimulation Boolean  @default(false)
+  mailboxId         String?
+  sentAt            DateTime @default(now())
+  isSimulation      Boolean  @default(false)
 
   lead     Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
   campaign Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
@@ -565,22 +522,18 @@ model Reply {
   @@map("replies")
 }
 
-// ===========================================================================
-// MEETINGS
-// ===========================================================================
-
 model Meeting {
-  id          String        @id @default(cuid())
-  leadId      String
-  title       String?
-  startsAt    DateTime
-  endsAt      DateTime?
-  status      MeetingStatus @default(SCHEDULED)
+  id              String        @id @default(cuid())
+  leadId          String
+  title           String?
+  startsAt        DateTime
+  endsAt          DateTime?
+  status          MeetingStatus @default(SCHEDULED)
   calendarEventId String?
-  meetingUrl  String?
-  notes       String?       @db.Text
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  meetingUrl      String?
+  notes           String?       @db.Text
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
 
@@ -590,19 +543,15 @@ model Meeting {
   @@map("meetings")
 }
 
-// ===========================================================================
-// SUPPRESSION LIST
-// ===========================================================================
-
 model SuppressionList {
-  id              String    @id @default(cuid())
+  id              String   @id @default(cuid())
   workspaceId     String
   normalizedEmail String?
   normalizedPhone String?
   domain          String?
-  reason          String?   // unsubscribe, bounce, manual, legal
+  reason          String?
   source          String?
-  createdAt       DateTime  @default(now())
+  createdAt       DateTime @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
@@ -613,18 +562,14 @@ model SuppressionList {
   @@map("suppression_list")
 }
 
-// ===========================================================================
-// COST LEDGER + RUNS
-// ===========================================================================
-
 model CostLedger {
   id          String       @id @default(cuid())
   workspaceId String
   runId       String?
   category    CostCategory
-  provider    String?      // openai, anthropic, hunter, etc.
+  provider    String?
   units       Float        @default(1)
-  unitCost    Float?       // credits or USD
+  unitCost    Float?
   totalCost   Float?
   meta        Json?
   createdAt   DateTime     @default(now())
@@ -644,7 +589,6 @@ model Run {
   workspaceId    String
   icpId          String?
   name           String?
-  // Goal-based: "find N qualified leads, max C credits"
   goalLeadCount  Int?
   maxCredits     Int?
   creditsUsed    Float     @default(0)
@@ -658,8 +602,8 @@ model Run {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  workspace  Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  icp        Icp?         @relation(fields: [icpId], references: [id], onDelete: SetNull)
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  icp         Icp?         @relation(fields: [icpId], references: [id], onDelete: SetNull)
   costEntries CostLedger[]
 
   @@index([workspaceId])
