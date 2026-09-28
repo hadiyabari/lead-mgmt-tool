@@ -1,60 +1,93 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-
-const KEY = 'lp_cookie_consent';
+import {
+  acceptAll,
+  hasConsentDecision,
+  rejectNonEssential,
+  trackConsentEvent,
+  CONSENT_CHANGE_EVENT,
+  type CookieConsentState,
+} from '@/lib/cookie-consent';
 
 export function CookieBanner() {
   const [show, setShow] = useState(false);
 
-  useEffect(() => {
-    try {
-      if (!localStorage.getItem(KEY)) setShow(true);
-    } catch {
-      setShow(true);
-    }
+  const syncVisibility = useCallback(() => {
+    setShow(!hasConsentDecision());
   }, []);
 
-  function accept() {
-    try {
-      localStorage.setItem(KEY, 'accepted');
-    } catch {
-      /* ignore */
-    }
+  useEffect(() => {
+    syncVisibility();
+    const onChange = () => syncVisibility();
+    window.addEventListener(CONSENT_CHANGE_EVENT, onChange);
+    return () => window.removeEventListener(CONSENT_CHANGE_EVENT, onChange);
+  }, [syncVisibility]);
+
+  function onAccept() {
+    acceptAll();
+    trackConsentEvent('cookie_accept');
     setShow(false);
-    fetch('/api/analytics/event', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'cookie_accept', path: window.location.pathname }),
-    }).catch(() => {});
   }
 
-  function reject() {
-    try {
-      localStorage.setItem(KEY, 'rejected');
-    } catch {
-      /* ignore */
-    }
+  function onReject() {
+    rejectNonEssential();
+    trackConsentEvent('cookie_reject');
     setShow(false);
   }
 
   if (!show) return null;
 
   return (
-    <div className="m-cookie" role="dialog" aria-label="Cookie consent">
+    <div className="m-cookie" role="dialog" aria-label="Cookie consent" aria-live="polite">
       <p>
-        We use essential cookies to run the site and optional analytics cookies to understand traffic.
-        See our <Link href="/legal/cookies">Cookie Policy</Link>.
+        Essential cookies keep the site secure and remember this choice. Analytics cookies measure
+        traffic only if you allow them. <Link href="/legal/cookies">Cookie Policy</Link>
       </p>
       <div className="m-cookie-actions">
-        <button type="button" className="m-btn m-btn-primary" onClick={accept}>
-          Accept
+        <button type="button" className="m-btn m-btn-primary" onClick={onAccept}>
+          Accept all
         </button>
-        <button type="button" className="m-btn m-btn-ghost" onClick={reject}>
-          Reject non-essential
+        <button type="button" className="m-btn m-btn-ghost" onClick={onReject}>
+          Essential only
         </button>
       </div>
     </div>
+  );
+}
+
+/** Footer control to change analytics preference after the first decision. */
+export function CookiePreferencesLink() {
+  function openBanner() {
+    try {
+      localStorage.removeItem('lp_cookie_consent_v2');
+      localStorage.removeItem('lp_cookie_consent');
+    } catch {
+      /* ignore */
+    }
+    window.dispatchEvent(
+      new CustomEvent(CONSENT_CHANGE_EVENT, {
+        detail: null as unknown as CookieConsentState,
+      })
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={openBanner}
+      style={{
+        background: 'none',
+        border: 'none',
+        padding: 0,
+        color: 'var(--m-muted)',
+        fontSize: '0.88rem',
+        cursor: 'pointer',
+        textAlign: 'left',
+      }}
+    >
+      Cookie preferences
+    </button>
   );
 }

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { CookieBanner } from './CookieBanner';
+import { CookieBanner, CookiePreferencesLink } from './CookieBanner';
 import { PageViewTracker } from './PageViewTracker';
 
 const SALES_PHONE = '03293318181';
@@ -38,6 +38,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
             <Link href="/legal/terms">Terms of Service</Link>
             <Link href="/legal/refunds">Refund Policy</Link>
             <Link href="/legal/data-deletion">Data Deletion</Link>
+            <CookiePreferencesLink />
           </div>
           <div>
             <h4>Sales</h4>
