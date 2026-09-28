@@ -4,53 +4,58 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-09-28] Phase 5 – Frontend Shell, Design System, Auth Pages, Kill Switch
+## [2026-09-28] Phase 6 – Normalisation Package + Contact-History Ledger Core
 
-**Goal:** Usable application shell and emergency controls.
+**Goal:** Canonical identity and the single source of truth for "already contacted".
 
 **Agent actions:**
-- Global CSS design tokens (dark theme: bg, border, primary, danger, badges).
-- `AppShell` component: sidebar nav (Dashboard, Leads, Runs, Campaigns, Ledger, Settings) + topbar.
-- Placeholder pages under `/dashboard/*` and `/settings`.
-- Kill switch: `workspaces.killSwitch` column + migration; `GET/POST /api/kill-switch`; `KillSwitch` client component (OWNER/ADMIN only).
-- Dashboard shows lead/run/campaign counts, simulation badge, kill switch banner.
-- Root `/` redirects to dashboard or login.
-- Middleware protects kill-switch API and settings.
+- Added `@leadpilot/shared` normalisation: email (Gmail dot-collapse), phone (E.164-ish + US/UK/AU defaults), domain, company name (legal suffix strip).
+- `normalizeIdentity()` bundle helper.
+- Unit tests for email, phone, domain, company edge cases.
+- Ledger service (`packages/db/src/ledger.ts`): `ledgerLookup`, `ledgerIsContacted`, `ledgerInsert`, `ledgerBulkImport`, `fourPointCheck`.
+- Four-point check: suppression list + ledger (already contacted); ready for enrich/score/write/send call sites.
+- `@leadpilot/db` depends on `@leadpilot/shared`.
 - Living docs updated.
 
 **Achieved:**
-- Authenticated app loads with shell navigation.
-- Kill switch is reachable and persists on the workspace (workers will honour it in later phases).
-- Env `KILL_SWITCH=true` still forces active state.
+- Same email in different formats maps to one normalized key (e.g. `John.Doe@Gmail.com` → `johndoe@gmail.com`).
+- Ledger insert is idempotent on normalized email/phone; bulk import reports inserted/updated/skipped.
+- Pipeline gate helper returns `allowed` + `reason`.
 
 **Open items / risks:**
-- Design system is CSS tokens only (full shadcn/Tailwind can be layered later without breaking layout).
-- Nav links to empty feature pages by design.
-- Workers do not yet read kill switch (no workers until pipeline phases).
+- Ledger UI + CSV/Gmail importers are Phase 7.
+- Integration tests against live Postgres deferred to local/CI when DB is up.
+- Gmail +tag is kept distinct by design (consent safety).
+
+**Commit:** feat(phase-6): normalisation package + contact-history ledger core + four-point check
+
+---
+
+## [2026-09-28] Phase 5 – Frontend Shell, Kill Switch
 
 **Commit:** feat(phase-5): app shell, design tokens, sidebar, kill switch API + UI
 
 ---
 
-## [2026-09-28] Phase 4 – Authentication, Workspaces, Roles, MFA, Password Reset
+## [2026-09-28] Phase 4 – Authentication
 
 **Commit:** feat(phase-4): auth.js credentials, argon2id, MFA TOTP, password reset, RBAC, rate limits
 
 ---
 
-## [2026-09-28] Phase 3 – Database Schema Part B
+## [2026-09-28] Phase 3 – Schema Part B
 
 **Commit:** feat(phase-3): database schema part B – leads, ledger, messaging, meetings, runs
 
 ---
 
-## [2026-09-28] Phase 2 – Database Schema Part A
+## [2026-09-28] Phase 2 – Schema Part A
 
 **Commit:** feat(phase-2): database schema part A – tenancy, users, ICP, sources + seed
 
 ---
 
-## [2026-09-28] Phase 1 – Tooling, CI, Docker
+## [2026-09-28] Phase 1 – Tooling
 
 **Commit:** chore(phase-1): tooling, Docker, CI, health-check, quality gates
 

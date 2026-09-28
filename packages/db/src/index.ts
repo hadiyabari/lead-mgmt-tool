@@ -1,7 +1,5 @@
 /**
  * @leadpilot/db – Prisma client singleton + repository helpers
- * Phase 2: Workspace, User, Icp, Playbook, SourceConfig
- * Phase 3: Leads, Ledger, Campaigns, Outbox, Runs, Suppression
  */
 
 import { PrismaClient } from '@prisma/client';
@@ -20,8 +18,17 @@ if (process.env.NODE_ENV !== 'production') {
 
 export * from '@prisma/client';
 
+export {
+  ledgerLookup,
+  ledgerIsContacted,
+  ledgerInsert,
+  ledgerBulkImport,
+  fourPointCheck,
+} from './ledger';
+export type { LedgerLookupInput, LedgerInsertInput, BulkImportRow, BulkImportResult } from './ledger';
+
 // ---------------------------------------------------------------------------
-// Workspace / User helpers (Phase 2)
+// Workspace / User helpers
 // ---------------------------------------------------------------------------
 
 export async function getWorkspaceBySlug(slug: string) {
@@ -78,10 +85,9 @@ export async function listAllSourceConfigs(workspaceId: string) {
 }
 
 // ---------------------------------------------------------------------------
-// Contact-history ledger helpers (Phase 3) – four-point check foundation
+// Legacy thin ledger helpers (prefer ledger.ts service)
 // ---------------------------------------------------------------------------
 
-/** Lookup by normalized email. Returns entry if already contacted. */
 export async function findLedgerByEmail(workspaceId: string, normalizedEmail: string) {
   if (!normalizedEmail) return null;
   return prisma.contactHistoryLedger.findUnique({
@@ -91,7 +97,6 @@ export async function findLedgerByEmail(workspaceId: string, normalizedEmail: st
   });
 }
 
-/** Lookup by normalized phone. */
 export async function findLedgerByPhone(workspaceId: string, normalizedPhone: string) {
   if (!normalizedPhone) return null;
   return prisma.contactHistoryLedger.findUnique({
@@ -101,7 +106,6 @@ export async function findLedgerByPhone(workspaceId: string, normalizedPhone: st
   });
 }
 
-/** True if email or phone already exists in the ledger (never-contact gate). */
 export async function isAlreadyContacted(
   workspaceId: string,
   opts: { normalizedEmail?: string | null; normalizedPhone?: string | null }
@@ -117,7 +121,6 @@ export async function isAlreadyContacted(
   return false;
 }
 
-/** True if email/phone/domain is on the suppression list. */
 export async function isSuppressed(
   workspaceId: string,
   opts: { normalizedEmail?: string | null; normalizedPhone?: string | null; domain?: string | null }
@@ -153,10 +156,6 @@ export async function isSuppressed(
   return false;
 }
 
-// ---------------------------------------------------------------------------
-// Lead helpers
-// ---------------------------------------------------------------------------
-
 export async function getLeadById(workspaceId: string, leadId: string) {
   return prisma.lead.findFirst({
     where: { id: leadId, workspaceId, deletedAt: null },
@@ -169,10 +168,6 @@ export async function listLeadsByStatus(workspaceId: string, status: string) {
     orderBy: { updatedAt: 'desc' },
   });
 }
-
-// ---------------------------------------------------------------------------
-// Run helpers
-// ---------------------------------------------------------------------------
 
 export async function getRunById(workspaceId: string, runId: string) {
   return prisma.run.findFirst({

@@ -1,18 +1,20 @@
 # FILEMAP – LeadPilot Retainer Edition
 
-## Phase 5 UI
+## Phase 6 – Normalisation + Ledger
 
 | Path | Purpose |
 |------|---------|
-| `apps/web/src/app/globals.css` | Design tokens + shell styles |
-| `apps/web/src/components/AppShell.tsx` | Sidebar + topbar layout |
-| `apps/web/src/components/KillSwitch.tsx` | Client kill-switch control |
-| `apps/web/src/app/api/kill-switch/route.ts` | GET/POST kill switch |
-| `apps/web/src/app/dashboard/*` | Dashboard + placeholder sections |
-| `apps/web/src/app/settings/page.tsx` | Settings + kill switch |
+| `packages/shared/src/normalize/email.ts` | Email canonical form (Gmail dots) |
+| `packages/shared/src/normalize/phone.ts` | Phone E.164-ish + country defaults |
+| `packages/shared/src/normalize/domain.ts` | Domain from URL/email |
+| `packages/shared/src/normalize/company.ts` | Company name dedup |
+| `packages/shared/src/normalize/index.ts` | `normalizeIdentity` |
+| `packages/shared/src/normalize/*.test.ts` | Unit tests |
+| `packages/db/src/ledger.ts` | Ledger service + four-point check |
 
-## Schema addition
+### Ledger service API
 
-| Column | Table | Purpose |
-|--------|-------|---------|
-| `killSwitch` | `workspaces` | Durable flag; when true, sending + enrichment must stop |
+- `ledgerLookup` / `ledgerIsContacted`
+- `ledgerInsert` (idempotent)
+- `ledgerBulkImport`
+- `fourPointCheck` → `{ allowed, reason }`
