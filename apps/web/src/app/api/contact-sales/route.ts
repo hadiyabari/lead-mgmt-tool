@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@leadpilot/db';
+import type { Prisma } from '@prisma/client';
 import { checkAuthRateLimit, getClientIp } from '@/lib/rate-limit';
 
 const bodySchema = z.object({
@@ -30,19 +31,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
+  const meta = {
+    name: parsed.data.name,
+    email: parsed.data.email,
+    company: parsed.data.company,
+    phone: parsed.data.phone,
+    message: parsed.data.message,
+    planInterest: parsed.data.planInterest,
+  } as Prisma.InputJsonValue;
+
   try {
     await prisma.siteEvent.create({
       data: {
         name: 'contact_sales',
         path: '/contact',
-        meta: {
-          name: parsed.data.name,
-          email: parsed.data.email,
-          company: parsed.data.company,
-          phone: parsed.data.phone,
-          message: parsed.data.message,
-          planInterest: parsed.data.planInterest,
-        },
+        meta,
       },
     });
   } catch {

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createHash } from 'node:crypto';
 import { prisma } from '@leadpilot/db';
+import type { Prisma } from '@prisma/client';
 
 const bodySchema = z.object({
   name: z.string().min(1).max(64),
@@ -34,6 +35,11 @@ export async function POST(req: Request) {
     ? createHash('sha256').update(ip + (process.env.AUTH_SECRET || 'lp')).digest('hex').slice(0, 32)
     : null;
 
+  const metaValue =
+    parsed.data.meta == null
+      ? undefined
+      : (parsed.data.meta as Prisma.InputJsonValue);
+
   try {
     await prisma.siteEvent.create({
       data: {
@@ -46,11 +52,10 @@ export async function POST(req: Request) {
         sessionId: parsed.data.sessionId ?? null,
         ipHash,
         userAgent: req.headers.get('user-agent')?.slice(0, 512) ?? null,
-        meta: parsed.data.meta ?? undefined,
+        meta: metaValue,
       },
     });
   } catch {
-    // Analytics must not break the site if DB is down
     return NextResponse.json({ ok: false }, { status: 202 });
   }
 
