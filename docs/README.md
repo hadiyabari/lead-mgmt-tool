@@ -1,6 +1,6 @@
 # LeadPilot Retainer Edition
 
-**Status:** Phase 1 complete – tooling, Docker, CI, health-check in place.
+**Status:** Phase 2 complete – tenancy, users, ICP, sources schema + seed.
 
 ## One-liner
 
@@ -32,7 +32,7 @@ Entry offer = free or low-cost audit + 30-day quick wins → monthly retainer.
 apps/
   web/          # Next.js 15 App Router frontend + API routes
 packages/
-  db/           # Prisma schema, migrations, client (Phase 2+)
+  db/           # Prisma schema, migrations, client, seed
   shared/       # Shared types, normalisation, agency defaults
   workers/      # BullMQ workers (later phases)
 docs/           # Living documents
@@ -54,12 +54,16 @@ pnpm install
 
 # 2. Start Postgres + Redis
 pnpm docker:up
-# or: docker compose up -d
 
-# 3. Copy env and adjust if needed
+# 3. Copy env
 cp .env.example .env
 
-# 4. Start the web app
+# 4. Generate Prisma client + apply migrations + seed
+pnpm --filter @leadpilot/db db:generate
+pnpm --filter @leadpilot/db db:migrate
+pnpm --filter @leadpilot/db db:seed
+
+# 5. Start the web app
 pnpm --filter @leadpilot/web dev
 # → http://localhost:3000
 # → Health: http://localhost:3000/api/health
@@ -71,11 +75,18 @@ pnpm --filter @leadpilot/web dev
 |---------|---------|
 | `pnpm docker:up` | Start Postgres + Redis |
 | `pnpm docker:down` | Stop containers |
-| `pnpm docker:logs` | Follow container logs |
-| `pnpm lint` | Lint all packages |
-| `pnpm typecheck` | TypeScript check |
-| `pnpm test` | Unit tests |
+| `pnpm --filter @leadpilot/db db:migrate` | Apply migrations |
+| `pnpm --filter @leadpilot/db db:seed` | Seed Threezero workspace + owner |
+| `pnpm --filter @leadpilot/db db:studio` | Prisma Studio |
+| `pnpm lint` / `typecheck` / `test` | Quality gates |
 | `pnpm placeholder-scan` | Fail on TODO / suspicious emails |
+
+### Seed creates
+
+- Workspace: **Threezero Agency** (`slug: threezero`)
+- Owner: `owner@threezero.agency` (password arrives in Phase 4)
+- Default ICP + Playbook
+- All source providers registered (disabled)
 
 ## Living Documents
 
@@ -92,11 +103,10 @@ pnpm --filter @leadpilot/web dev
 - Contact-history ledger is the single source of truth for "already contacted".
 - Simulation mode must be available end-to-end.
 - No LinkedIn / Instagram scraping. Official registries + licensed enrichment only.
-- Secondary domains only for cold outreach (`*.threezero.agency`). Primary domain never used for cold mail.
+- Secondary domains only for cold outreach (`*.threezero.agency`).
 - Legal footer address: China Corporation, Main road China scheme, Lahore 54000.
-- CAN-SPAM / PECR / Australian Spam Act compliance enforced by the compliance engine.
 
 ## Current Phase
 
-**Phase 1 – complete.**  
-Next: Phase 2 – Database Schema Part A (tenancy, users, ICP, sources).
+**Phase 2 – complete.**  
+Next: Phase 3 – Database Schema Part B (Leads, Ledger, Messaging, Meetings).

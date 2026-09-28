@@ -1,0 +1,225 @@
+// LeadPilot Retainer Edition – Prisma schema
+// Phase 2: Tenancy, Users, ICP, Playbooks, SourceConfig
+// Phase 3 will add Leads, Ledger, Messaging, Meetings
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Auth.js / NextAuth compatible models
+// ---------------------------------------------------------------------------
+
+enum Role {
+  OWNER
+  ADMIN
+  OPERATOR
+  VIEWER
+}
+
+model User {
+  id             String    @id @default(cuid())
+  workspaceId    String
+  email          String
+  emailVerified  DateTime?
+  name           String?
+  image          String?
+  passwordHash   String?   // Argon2id – set in Phase 4
+  role           Role      @default(OPERATOR)
+  mfaEnabled     Boolean   @default(false)
+  mfaSecret      String?   // encrypted TOTP secret – Phase 4
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime? // soft-delete
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  accounts  Account[]
+  sessions  Session[]
+
+  @@unique([workspaceId, email])
+  @@index([email])
+  @@index([workspaceId])
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ---------------------------------------------------------------------------
+// Workspace (single-tenant for v1; multi-tenant ready)
+// ---------------------------------------------------------------------------
+
+model Workspace {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  legalAddress String?  // CAN-SPAM / PECR / Spam Act footer
+  primaryDomain String? // e.g. threezero.agency – cold outreach uses subdomains only
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+
+  users          User[]
+  icps           Icp[]
+  playbooks      Playbook[]
+  sourceConfigs  SourceConfig[]
+
+  @@map("workspaces")
+}
+
+// ---------------------------------------------------------------------------
+// ICP – Ideal Customer Profile
+// ---------------------------------------------------------------------------
+
+enum Vertical {
+  DENTAL_ORTHO
+  HOME_SERVICES
+  AESTHETIC_MEDSPA
+  OTHER
+}
+
+enum CountryCode {
+  US
+  UK
+  AU
+}
+
+model Icp {
+  id          String      @id @default(cuid())
+  workspaceId String
+  name        String
+  description String?
+  verticals   Vertical[]  // multi-select
+  countries   CountryCode[]
+  // Geography filters (flexible JSON for cities/states/regions)
+  geoFilters  Json?       // e.g. { states: ["CA", "TX"], cities: ["London"] }
+  // Size / quality signals
+  minRating   Float?
+  minReviews  Int?
+  // Audit thresholds (dominant scoring signal)
+  minAuditScore Float?    // 0–100
+  requireWebsite Boolean  @default(true)
+  // Status
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deletedAt   DateTime?
+
+  workspace Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  playbooks Playbook[]
+
+  @@index([workspaceId])
+  @@index([workspaceId, isActive])
+  @@map("icps")
+}
+
+// ---------------------------------------------------------------------------
+// Playbook – outreach sequence + messaging rules linked to an ICP
+// ---------------------------------------------------------------------------
+
+model Playbook {
+  id          String   @id @default(cuid())
+  workspaceId String
+  icpId       String?
+  name        String
+  description String?
+  // Messaging defaults (editable later)
+  offerName   String?  // e.g. "Local + AI Visibility Retainer"
+  offerSummary String? @db.Text
+  // Sequence config stored as JSON for flexibility until Phase 18
+  sequenceConfig Json?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  icp       Icp?      @relation(fields: [icpId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([icpId])
+  @@map("playbooks")
+}
+
+// ---------------------------------------------------------------------------
+// SourceConfig – which official registries / adapters are enabled
+// ---------------------------------------------------------------------------
+
+enum SourceProvider {
+  NPI_US
+  STATE_LICENSE_US
+  COMPANIES_HOUSE_UK
+  ABN_ASIC_AU
+  HEALTH_REGISTER_AU
+  JOB_BOARD
+  GOOGLE_PLACES_ENRICH  // enrichment only, never primary list
+  YELP_ENRICH           // enrichment only
+  WEBSITE_EXTRACT
+  CUSTOM
+}
+
+model SourceConfig {
+  id          String         @id @default(cuid())
+  workspaceId String
+  provider    SourceProvider
+  name        String         // display name
+  isEnabled   Boolean        @default(false)
+  // Rate limits & credit budgets per source
+  maxRequestsPerMinute Int   @default(30)
+  maxCreditsPerRun     Int?
+  // Provider-specific config (API keys stored encrypted elsewhere; this holds non-secret params)
+  config      Json?          // e.g. { state: "CA", searchTerms: ["dentist"] }
+  lastSyncedAt DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, provider])
+  @@index([workspaceId])
+  @@map("source_configs")
+}

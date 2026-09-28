@@ -6,16 +6,14 @@ Living map of the repository. Updated after every phase.
 
 | Path | Purpose |
 |------|---------|
-| `package.json` | Root workspace scripts, packageManager, shared devDeps |
-| `pnpm-workspace.yaml` | Declares `apps/*` and `packages/*` |
+| `package.json` | Root workspace scripts |
+| `pnpm-workspace.yaml` | apps/* + packages/* |
 | `turbo.json` | Turborepo task graph |
-| `tsconfig.base.json` | Shared TypeScript base config |
-| `docker-compose.yml` | Postgres 16 + Redis 7 (local) |
-| `.env.example` | All required env keys (no secrets) |
-| `.gitignore` | Standard Node / Next / Prisma ignores |
-| `.prettierrc` / `.prettierignore` | Formatting |
-| `scripts/placeholder-scan.mjs` | CI gate – fails on TODO/FIXME/PLACEHOLDER + suspicious emails |
-| `.github/workflows/ci.yml` | Lint, typecheck, test, placeholder-scan, audit |
+| `tsconfig.base.json` | Shared TS base |
+| `docker-compose.yml` | Postgres 16 + Redis 7 |
+| `.env.example` | Required env keys |
+| `.github/workflows/ci.yml` | CI pipeline |
+| `scripts/placeholder-scan.mjs` | CI gate for TODO / fake emails |
 
 ## docs/
 
@@ -23,34 +21,47 @@ Living map of the repository. Updated after every phase.
 |------|---------|
 | `docs/AGENT_RULES.md` | Non-negotiable agent rules |
 | `docs/HISTORY.md` | Phase-by-phase changelog |
-| `docs/README.md` | Product overview + local run instructions |
+| `docs/README.md` | Product overview + local run |
 | `docs/FILEMAP.md` | This file |
-| `docs/PLAN.md` | Full project plan (source of truth) |
+| `docs/PLAN.md` | Full project plan |
 
 ## apps/web
 
 | Path | Purpose |
 |------|---------|
-| `apps/web/package.json` | Next.js 15 + React 19 + Vitest |
-| `apps/web/tsconfig.json` | Extends base; path aliases `@/*`, `@leadpilot/shared` |
-| `apps/web/next.config.ts` | Next config, transpile shared package |
 | `apps/web/src/app/layout.tsx` | Root layout |
 | `apps/web/src/app/page.tsx` | Home placeholder |
 | `apps/web/src/app/api/health/route.ts` | Health-check endpoint |
-| `apps/web/src/app/api/health/route.test.ts` | Smoke test for health contract |
-| `apps/web/vitest.config.ts` | Unit test config |
+| `apps/web/src/app/api/health/route.test.ts` | Smoke test |
 
-## packages/
+## packages/db (Phase 2)
 
 | Path | Purpose |
 |------|---------|
-| `packages/shared/src/index.ts` | Agency defaults (Threezero Agency), shared types |
-| `packages/shared/tsconfig.json` | Shared package TS config |
-| `packages/db/` | Prisma schema, migrations, client (Phase 2+) |
-| `packages/workers/` | BullMQ workers (later phases) |
+| `packages/db/prisma/schema.prisma` | Full schema: Workspace, User, Account, Session, VerificationToken, Icp, Playbook, SourceConfig |
+| `packages/db/prisma/migrations/…` | Initial migration SQL |
+| `packages/db/prisma/seed.ts` | Seed: Threezero workspace, owner, default ICP/playbook, source configs |
+| `packages/db/src/index.ts` | Prisma client singleton + repository helpers |
 
-## Planned (later phases)
+### Table purposes (Phase 2)
 
-- Prisma schema + seed (Phase 2–3)
-- Auth.js + MFA pages (Phase 4–5)
-- Full pipeline packages, source adapters, scoring, etc.
+| Table | Purpose |
+|-------|---------|
+| `workspaces` | Single-tenant workspace (Threezero Agency); multi-tenant ready |
+| `users` | Users with Role (OWNER/ADMIN/OPERATOR/VIEWER); soft-delete |
+| `accounts` | OAuth / Auth.js account links |
+| `sessions` | Auth.js sessions |
+| `verification_tokens` | Email verification / password-reset tokens |
+| `icps` | Ideal Customer Profiles (verticals, countries, geo, audit thresholds) |
+| `playbooks` | Outreach sequences + offer messaging linked to ICPs |
+| `source_configs` | Which official registry / enrichment adapters are enabled + rate limits |
+
+## packages/shared
+
+| Path | Purpose |
+|------|---------|
+| `packages/shared/src/index.ts` | Agency defaults, shared types |
+
+## packages/workers
+
+Skeleton only – workers arrive with pipeline phases.

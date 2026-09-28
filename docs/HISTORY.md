@@ -4,6 +4,34 @@ Living changelog. Newest entries at the top.
 
 ---
 
+## [2026-09-28] Phase 2 – Database Schema Part A: Tenancy, Users, ICP, Sources
+
+**Goal:** Core multi-user foundation (single workspace for v1) and configuration tables.
+
+**Agent actions:**
+- Created full Prisma schema for Workspace, User, Account, Session, VerificationToken, Icp, Playbook, SourceConfig.
+- Defined enums: Role, Vertical, CountryCode, SourceProvider.
+- Wrote initial migration SQL (`20260928120000_phase2_tenancy_users_icp_sources`).
+- Implemented seed script: Threezero Agency workspace, owner user, default ICP, default playbook, all source configs (disabled).
+- Added thin repository helpers in `packages/db/src/index.ts` (getWorkspaceBySlug, getUserByEmail, listActiveIcps, etc.).
+- Updated package.json with Prisma scripts (generate, migrate, seed, studio, reset).
+- Updated living documents (HISTORY, README, FILEMAP, PLAN).
+
+**Achieved:**
+- Schema covers Auth.js-compatible auth models + workspace tenancy + ICP/playbook/source configuration.
+- Soft-delete fields present on User, Workspace, Icp, Playbook.
+- Seed is idempotent (upsert) and creates a working owner account ready for Phase 4 password hashing.
+- Unique constraints: workspace slug, (workspaceId + email), (workspaceId + provider).
+
+**Open items / risks:**
+- Migration has not been applied against a live DB yet (requires local `docker compose up` + `pnpm db:migrate`).
+- Password hashing and MFA fields exist but are unused until Phase 4.
+- No leads/ledger/messaging tables yet (Phase 3).
+
+**Commit:** feat(phase-2): database schema part A – tenancy, users, ICP, sources + seed
+
+---
+
 ## [2026-09-28] Phase 1 – Monorepo Tooling, CI, Docker, Quality Gates
 
 **Goal:** Make the development experience reliable and prevent bad code from landing.
