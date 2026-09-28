@@ -1,29 +1,24 @@
 # LeadPilot Retainer Edition
 
-**Status:** Phase 10–11 complete – enrichment + audit client.
+Multi-tenant lead generation platform for agencies. Public site is Contact Sales only.
 
-## Enrichment
+**Sales:** 03293318181
 
-| Provider | Env |
-|----------|-----|
-| Google Places | `GOOGLE_PLACES_API_KEY` |
-| Yelp | `YELP_API_KEY` |
-| Website extract | none (robots-respecting fetch) |
-| Job board | `ADZUNA_APP_ID` (optional) |
+## Plans
 
-`POST /api/leads/:id/enrich`
+- Starter $100/month
+- Growth $300/month
+- Enterprise custom
 
-## Audit
+All sold via Contact Sales. SUPER_ADMIN provisions workspaces.
 
-| Env | Purpose |
-|-----|---------|
-| `AUDIT_TOOL_URL` | Agency tool base (`POST /audit`) |
-| `AUDIT_TOOL_API_KEY` | Optional bearer |
+## Local
 
-`POST /api/leads/:id/audit` · `POST /api/audit` `{ "url": "…" }`
+```bash
+pnpm install && pnpm docker:up
+cp .env.example .env
+pnpm --filter @leadpilot/db db:generate && pnpm --filter @leadpilot/db db:migrate
+pnpm --filter @leadpilot/web dev
+```
 
-Simulation default when keys/tool missing.
-
-## Current Phase
-
-**Phase 10–11 – complete.** Next: Phase 12 – Scoring model.
+Marketing: `/` · App login: `/login` · Super-admin analytics: `/admin/analytics`

@@ -1,15 +1,13 @@
 # FILEMAP – LeadPilot Retainer Edition
 
-## Phase 10–11
+## Marketing and tenancy
 
 | Path | Purpose |
 |------|---------|
-| `packages/sources/src/adapters/google-places.ts` | Places enrich-only |
-| `packages/sources/src/adapters/yelp.ts` | Yelp enrich |
-| `packages/sources/src/adapters/website-extract.ts` | Contact scrape + robots |
-| `packages/sources/src/adapters/job-board.ts` | Hiring intent |
-| `packages/sources/src/enrich.ts` | Orchestrator |
-| `packages/audit/src/client.ts` | Audit tool client + cache |
-| `apps/web/src/app/api/leads/[id]/enrich/route.ts` | Enrich lead |
-| `apps/web/src/app/api/leads/[id]/audit/route.ts` | Audit lead |
-| `apps/web/src/app/api/audit/route.ts` | Standalone audit |
+| `apps/web/src/app/(marketing)/*` | Home, how-it-works, pricing, contact, legal |
+| `apps/web/src/components/marketing/*` | Chrome, cookies, page views |
+| `apps/web/src/app/api/analytics/event` | Site event ingest |
+| `apps/web/src/app/api/contact-sales` | Sales form |
+| `apps/web/src/app/api/admin/analytics` | SUPER_ADMIN metrics |
+| `apps/web/src/app/admin/analytics` | Analytics UI |
+| `SiteEvent` model | Marketing and contact events |

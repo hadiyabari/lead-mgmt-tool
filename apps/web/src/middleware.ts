@@ -2,7 +2,20 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-const publicPaths = ['/login', '/register', '/reset-password', '/api/auth', '/api/health'];
+const publicPaths = [
+  '/',
+  '/how-it-works',
+  '/pricing',
+  '/contact',
+  '/login',
+  '/register',
+  '/reset-password',
+  '/legal',
+  '/api/auth',
+  '/api/health',
+  '/api/analytics',
+  '/api/contact-sales',
+];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -14,9 +27,13 @@ export async function middleware(req: NextRequest) {
   if (
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/settings') ||
+    pathname.startsWith('/admin') ||
     pathname.startsWith('/api/kill-switch') ||
     pathname.startsWith('/api/ledger') ||
-    pathname.startsWith('/api/sources')
+    pathname.startsWith('/api/sources') ||
+    pathname.startsWith('/api/leads') ||
+    pathname.startsWith('/api/audit') ||
+    pathname.startsWith('/api/admin')
   ) {
     const token = await getToken({ req, secret: process.env.AUTH_SECRET });
     if (!token) {
