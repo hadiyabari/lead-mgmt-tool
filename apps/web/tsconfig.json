@@ -6,7 +6,15 @@
     "paths": {
       "@/*": ["./src/*"],
       "@leadpilot/shared": ["../../packages/shared/src"],
-      "@leadpilot/shared/*": ["../../packages/shared/src/*"]
+      "@leadpilot/shared/*": ["../../packages/shared/src/*"],
+      "@leadpilot/db": ["../../packages/db/src"],
+      "@leadpilot/db/*": ["../../packages/db/src/*"],
+      "@leadpilot/sources": ["../../packages/sources/src"],
+      "@leadpilot/sources/*": ["../../packages/sources/src/*"],
+      "@leadpilot/audit": ["../../packages/audit/src"],
+      "@leadpilot/audit/*": ["../../packages/audit/src/*"],
+      "@leadpilot/scoring": ["../../packages/scoring/src"],
+      "@leadpilot/scoring/*": ["../../packages/scoring/src/*"]
     },
     "allowJs": true,
     "noEmit": true,
