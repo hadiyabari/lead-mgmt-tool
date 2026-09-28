@@ -28,7 +28,6 @@ function simulatedAudit(url: string): AuditResultPayload {
       description: 'Limited structured data for AI answer engines (simulated).',
     },
   ];
-  // Deterministic-ish score from URL length
   const score = 35 + (url.length % 40);
   return {
     url,
@@ -59,8 +58,8 @@ export async function runAudit(
 
   const simulation =
     opts.simulation ??
-    process.env.SIMULATION_MODE === 'true' ||
-    !opts.baseUrl && !process.env.AUDIT_TOOL_URL;
+    (process.env.SIMULATION_MODE === 'true' ||
+      (!opts.baseUrl && !process.env.AUDIT_TOOL_URL));
 
   if (simulation) {
     const payload = simulatedAudit(url);
@@ -111,7 +110,6 @@ export async function runAudit(
     return payload;
   } catch (e) {
     clearTimeout(timer);
-    // Fallback to simulation if tool unavailable (pipeline continues)
     const fallback = simulatedAudit(url);
     fallback.raw = {
       ...fallback.raw,
