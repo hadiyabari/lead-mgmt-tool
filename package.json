@@ -1,0 +1,25 @@
+{
+  "name": "leadpilot-retainer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LeadPilot Retainer Edition – high-value local service lead generation, scoring, grounded outreach and booking",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "placeholder-scan": "node scripts/placeholder-scan.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
