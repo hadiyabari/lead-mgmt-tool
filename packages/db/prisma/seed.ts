@@ -1,14 +1,17 @@
 /**
- * Phase 2 seed – creates one workspace + one owner user for Threezero Agency.
- * Password is intentionally left null; real hashing lands in Phase 4.
+ * Phase 2–4 seed – Threezero workspace + owner with Argon2id password.
+ * Default password (dev only): ChangeMeNow123!
  * Run: pnpm --filter @leadpilot/db db:seed
  */
 import { PrismaClient, Role, SourceProvider, Vertical, CountryCode } from '@prisma/client';
+import argon2 from 'argon2';
 
 const prisma = new PrismaClient();
 
+const DEV_PASSWORD = 'ChangeMeNow123!';
+
 async function main() {
-  console.log('Seeding LeadPilot (Phase 2)…');
+  console.log('Seeding LeadPilot…');
 
   const workspace = await prisma.workspace.upsert({
     where: { slug: 'threezero' },
@@ -20,7 +23,14 @@ async function main() {
       primaryDomain: 'threezero.agency',
     },
   });
-  console.log(`  Workspace: ${workspace.name} (${workspace.id})`);
+  console.log(`  Workspace: ${workspace.name}`);
+
+  const passwordHash = await argon2.hash(DEV_PASSWORD, {
+    type: argon2.argon2id,
+    memoryCost: 65536,
+    timeCost: 3,
+    parallelism: 4,
+  });
 
   const owner = await prisma.user.upsert({
     where: {
@@ -29,18 +39,17 @@ async function main() {
         email: 'owner@threezero.agency',
       },
     },
-    update: {},
+    update: { passwordHash },
     create: {
       workspaceId: workspace.id,
       email: 'owner@threezero.agency',
       name: 'Threezero Owner',
       role: Role.OWNER,
-      // passwordHash set in Phase 4
+      passwordHash,
     },
   });
-  console.log(`  Owner user: ${owner.email} (${owner.id})`);
+  console.log(`  Owner: ${owner.email} (password set for dev)`);
 
-  // Default ICP covering all v1 verticals + countries
   const icp = await prisma.icp.upsert({
     where: { id: 'seed-icp-default' },
     update: {},
@@ -59,7 +68,6 @@ async function main() {
   });
   console.log(`  ICP: ${icp.name}`);
 
-  // Default playbook
   await prisma.playbook.upsert({
     where: { id: 'seed-playbook-default' },
     update: {},
@@ -75,9 +83,7 @@ async function main() {
       isActive: true,
     },
   });
-  console.log('  Playbook: Local + AI Visibility Retainer');
 
-  // Source configs – disabled by default; enable in UI later
   const sources: { provider: SourceProvider; name: string }[] = [
     { provider: SourceProvider.NPI_US, name: 'NPI Registry (US)' },
     { provider: SourceProvider.STATE_LICENSE_US, name: 'State Licensing Boards (US)' },
@@ -93,10 +99,7 @@ async function main() {
   for (const s of sources) {
     await prisma.sourceConfig.upsert({
       where: {
-        workspaceId_provider: {
-          workspaceId: workspace.id,
-          provider: s.provider,
-        },
+        workspaceId_provider: { workspaceId: workspace.id, provider: s.provider },
       },
       update: {},
       create: {
@@ -108,9 +111,9 @@ async function main() {
       },
     });
   }
-  console.log(`  Source configs: ${sources.length} providers registered (all disabled)`);
 
   console.log('Seed complete.');
+  console.log(`  Dev login: owner@threezero.agency / ${DEV_PASSWORD}`);
 }
 
 main()

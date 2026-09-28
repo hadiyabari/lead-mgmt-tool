@@ -1,13 +1,10 @@
 # LeadPilot Retainer Edition
 
-**Status:** Phase 3 complete – full pipeline data model (leads, ledger, messaging, runs).
+**Status:** Phase 4 complete – authentication, MFA, password reset, RBAC.
 
-## One-liner
+## Agency
 
-LeadPilot Retainer Edition finds high-value local service businesses (dental / orthodontic, home services, med-spa / aesthetic clinics) in the US, UK and Australia from official public registries, scores them using the agency's own audit tool results, writes grounded audit-based emails, sends only to never-contacted leads under strict compliance rules, and books discovery calls that convert into monthly retainers.
-
-**Agency:** Threezero Agency  
-**Primary domain:** threezero.agency (cold outreach uses subdomains only)
+Threezero Agency · threezero.agency (cold outreach = subdomains only)
 
 ## Local Development
 
@@ -15,16 +12,32 @@ LeadPilot Retainer Edition finds high-value local service businesses (dental / o
 pnpm install
 pnpm docker:up
 cp .env.example .env
+# Set AUTH_SECRET to a long random string
 
 pnpm --filter @leadpilot/db db:generate
-pnpm --filter @leadpilot/db db:migrate   # applies Phase 2 + Phase 3
+pnpm --filter @leadpilot/db db:migrate
 pnpm --filter @leadpilot/db db:seed
 
 pnpm --filter @leadpilot/web dev
-# → http://localhost:3000/api/health
 ```
+
+### Dev login (after seed)
+
+- **Email:** `owner@threezero.agency`
+- **Password:** `ChangeMeNow123!`
+- Change immediately in production.
+
+### Auth routes
+
+| Path | Purpose |
+|------|---------|
+| `/login` | Credentials + optional MFA step |
+| `/register` | Bootstrap only (empty workspace) |
+| `/reset-password` | Request + confirm reset |
+| `/dashboard` | Protected shell |
+| `/api/auth/*` | Auth.js + register / reset / MFA |
 
 ## Current Phase
 
-**Phase 3 – complete.**  
-Next: Phase 4 – Authentication, Workspaces, Roles, MFA, Password Reset.
+**Phase 4 – complete.**  
+Next: Phase 5 – Frontend shell, design system, kill switch.
