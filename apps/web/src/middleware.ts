@@ -14,10 +14,14 @@ export async function middleware(req: NextRequest) {
   if (
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/settings') ||
-    pathname.startsWith('/api/kill-switch')
+    pathname.startsWith('/api/kill-switch') ||
+    pathname.startsWith('/api/ledger')
   ) {
     const token = await getToken({ req, secret: process.env.AUTH_SECRET });
     if (!token) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
       const login = new URL('/login', req.url);
       login.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(login);

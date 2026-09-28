@@ -10,8 +10,8 @@ import {
   domainFromEmail,
   type NormalizedIdentity,
 } from '@leadpilot/shared';
-import { prisma } from './index';
-import type { ContactChannel, ContactOrigin, ContactHistoryLedger } from '@prisma/client';
+import { prisma } from './client';
+import type { ContactChannel, ContactOrigin, ContactHistoryLedger, Prisma } from '@prisma/client';
 
 export type LedgerLookupInput = {
   email?: string | null;
@@ -39,7 +39,6 @@ function toNormalized(input: LedgerLookupInput): NormalizedIdentity & { domain: 
   return { email, phone, domain, companyName: null };
 }
 
-/** Lookup existing ledger entry by email or phone. */
 export async function ledgerLookup(
   workspaceId: string,
   input: LedgerLookupInput
@@ -64,19 +63,13 @@ export async function ledgerLookup(
   return null;
 }
 
-/** True if already in ledger (never-contact gate). */
 export async function ledgerIsContacted(
   workspaceId: string,
   input: LedgerLookupInput
 ): Promise<boolean> {
-  const row = await ledgerLookup(workspaceId, input);
-  return row != null;
+  return (await ledgerLookup(workspaceId, input)) != null;
 }
 
-/**
- * Insert or touch ledger entry. Does not create duplicate email/phone rows.
- * If exists, updates lastContactedAt.
- */
 export async function ledgerInsert(
   workspaceId: string,
   input: LedgerInsertInput
@@ -134,7 +127,6 @@ export type BulkImportResult = {
   errors: { index: number; message: string }[];
 };
 
-/** Bulk import contacts into the ledger (CSV/CRM path foundation). */
 export async function ledgerBulkImport(
   workspaceId: string,
   rows: BulkImportRow[],
@@ -201,11 +193,46 @@ export async function ledgerBulkImport(
   return result;
 }
 
-/**
- * Four-point pipeline gate.
- * Returns { allowed, reason } – reason when blocked.
- * Checks: kill switch (caller), suppression, ledger (already contacted).
- */
+export type LedgerListFilters = {
+  q?: string;
+  origin?: ContactOrigin;
+  limit?: number;
+  offset?: number;
+};
+
+export async function ledgerList(workspaceId: string, filters: LedgerListFilters = {}) {
+  const limit = Math.min(filters.limit ?? 50, 200);
+  const offset = filters.offset ?? 0;
+
+  const where: Prisma.ContactHistoryLedgerWhereInput = { workspaceId };
+
+  if (filters.origin) {
+    where.origin = filters.origin;
+  }
+  if (filters.q && filters.q.trim()) {
+    const q = filters.q.trim();
+    where.OR = [
+      { email: { contains: q, mode: 'insensitive' } },
+      { normalizedEmail: { contains: q.toLowerCase() } },
+      { phone: { contains: q } },
+      { normalizedPhone: { contains: q.replace(/\D/g, '') } },
+      { domain: { contains: q.toLowerCase() } },
+    ];
+  }
+
+  const [items, total] = await Promise.all([
+    prisma.contactHistoryLedger.findMany({
+      where,
+      orderBy: { lastContactedAt: 'desc' },
+      take: limit,
+      skip: offset,
+    }),
+    prisma.contactHistoryLedger.count({ where }),
+  ]);
+
+  return { items, total, limit, offset };
+}
+
 export async function fourPointCheck(
   workspaceId: string,
   input: LedgerLookupInput & { checkSuppression?: boolean }
