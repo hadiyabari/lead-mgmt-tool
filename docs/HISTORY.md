@@ -4,29 +4,32 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-09-28] Cookie consent logic
+## [2026-09-28] Phase 12 – Scoring model + analytics taxonomy + security headers
 
-**Goal:** Correct essential vs analytics gating for marketing analytics.
+**Goal:** Rank leads reproducibly; expand first-party analytics types; harden HTTP headers.
 
 **Agent actions:**
-- Added `lib/cookie-consent.ts`: versioned JSON consent (v2), migrate legacy string keys, acceptAll / rejectNonEssential, hasAnalyticsConsent, consent change CustomEvent.
-- CookieBanner uses the module; footer Cookie preferences clears decision and reopens banner.
-- PageViewTracker sends page_view only when analytics is true (no tracking on unknown/reject); tracks after accept via consent event; session id in sessionStorage when allowed.
-- Unit tests for consent store.
-- Cookie policy page updated to match behaviour.
+- Package `@leadpilot/scoring`: weighted score (audit, rating, reviews, website, email, phone, job signal, ICP fit), normalized weights, breakdown with labels, qualified threshold, unit tests for reproducibility.
+- `POST /api/leads/[id]/score` persists LeadScore and updates lead status QUALIFIED/SCORED.
+- Analytics: event taxonomy (traffic, behavior, conversion, performance, content), `track()` client helper, BehaviorTracker (scroll depth, CTA/phone clicks, navigation timing).
+- Security: middleware applies CSP, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy, HSTS in production.
+- Admin analytics aggregates by event name and category.
+- docs/SECURITY.md, docs/ANALYTICS.md, PLAN/HISTORY updated.
 
 **Achieved:**
-- No analytics until explicit Accept all.
-- Essential-only path blocks page_view.
-- Re-consent when version bumps.
+- Same inputs yield same score; operators get breakdown details.
+- Consent-gated behavior and conversion events.
+- Baseline security headers on responses.
 
-**Open items / risks:**
-- Contact form still stores inquiry server-side (intentional service request).
+**Open items:**
+- Weights UI for operators (API accepts weights body already).
+- Full Core Web Vitals (INP/CLS) library optional later.
+- External WAF/CDN remains operational concern.
 
-**Commit:** feat(cookies): versioned consent store, analytics gate, reopen preferences
+**Commit:** feat(phase-12): scoring model + first-party analytics types + security headers
 
 ---
 
-## Prior
+## Prior entries
 
-Marketing site, multi-tenant rules, phases 0–11 on main.
+Cookie consent, marketing site, phases 0–11 on main.

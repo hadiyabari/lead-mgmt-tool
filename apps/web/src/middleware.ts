@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import { applySecurityHeaders } from '@/lib/security-headers';
 
 const publicPaths = [
   '/',
@@ -20,8 +21,11 @@ const publicPaths = [
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  let res: NextResponse;
+
   if (publicPaths.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
-    return NextResponse.next();
+    res = NextResponse.next();
+    return applySecurityHeaders(res);
   }
 
   if (
@@ -38,15 +42,18 @@ export async function middleware(req: NextRequest) {
     const token = await getToken({ req, secret: process.env.AUTH_SECRET });
     if (!token) {
       if (pathname.startsWith('/api/')) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        res = NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        return applySecurityHeaders(res);
       }
       const login = new URL('/login', req.url);
       login.searchParams.set('callbackUrl', pathname);
-      return NextResponse.redirect(login);
+      res = NextResponse.redirect(login);
+      return applySecurityHeaders(res);
     }
   }
 
-  return NextResponse.next();
+  res = NextResponse.next();
+  return applySecurityHeaders(res);
 }
 
 export const config = {

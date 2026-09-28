@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { CookieBanner, CookiePreferencesLink } from './CookieBanner';
 import { PageViewTracker } from './PageViewTracker';
+import { BehaviorTracker } from './BehaviorTracker';
 
 const SALES_PHONE = '03293318181';
 
@@ -9,6 +10,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
   return (
     <div className="m-wrap">
       <PageViewTracker />
+      <BehaviorTracker />
       <header className="m-nav">
         <Link href="/" className="m-brand">
           Lead<span>Pilot</span>
