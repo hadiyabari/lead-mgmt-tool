@@ -4,6 +4,37 @@ Living changelog. Newest entries at the top.
 
 ---
 
+## [2026-09-28] Phase 3 – Database Schema Part B: Leads, Ledger, Messaging, Meetings
+
+**Goal:** Complete the data model needed for the full pipeline.
+
+**Agent actions:**
+- Extended Prisma schema with Lead, LeadEnrichment, LeadScore, AuditResult.
+- Added ContactHistoryLedger (unique on workspace + normalizedEmail / normalizedPhone).
+- Added Campaign, Sequence, EmailOutbox, EmailSent, Reply, Meeting.
+- Added SuppressionList, CostLedger, Run.
+- New enums: LeadStatus, ContactChannel, ContactOrigin, CampaignStatus, OutboxStatus, ReplyClassification, MeetingStatus, RunStatus, CostCategory.
+- Wrote migration `20260928140000_phase3_leads_ledger_messaging`.
+- Extended repository helpers: `findLedgerByEmail`, `findLedgerByPhone`, `isAlreadyContacted`, `isSuppressed`, lead/run helpers.
+- Updated FILEMAP with every table purpose; HISTORY, README, PLAN, db README updated.
+
+**Achieved:**
+- Full pipeline data model present.
+- Ledger uniqueness constraints defined for never-contacted gate.
+- Outbox includes lock fields (`lockedAt`, `lockedBy`) for worker claim pattern.
+- Runs support goal lead count + max credits + simulation flag.
+- Soft-delete on Lead; indexes for status, domain, email, score lookups.
+
+**Open items / risks:**
+- Migration not yet applied to a live DB (local `db:migrate` required).
+- Postgres UNIQUE allows multiple NULLs; app must not insert empty normalized email/phone as unique keys.
+- Normalisation package (Phase 6) still required before production ledger use.
+- No seed data for leads/ledger (intentionally empty).
+
+**Commit:** feat(phase-3): database schema part B – leads, ledger, messaging, meetings, runs
+
+---
+
 ## [2026-09-28] Phase 2 – Database Schema Part A: Tenancy, Users, ICP, Sources
 
 **Goal:** Core multi-user foundation (single workspace for v1) and configuration tables.
@@ -13,20 +44,17 @@ Living changelog. Newest entries at the top.
 - Defined enums: Role, Vertical, CountryCode, SourceProvider.
 - Wrote initial migration SQL (`20260928120000_phase2_tenancy_users_icp_sources`).
 - Implemented seed script: Threezero Agency workspace, owner user, default ICP, default playbook, all source configs (disabled).
-- Added thin repository helpers in `packages/db/src/index.ts` (getWorkspaceBySlug, getUserByEmail, listActiveIcps, etc.).
-- Updated package.json with Prisma scripts (generate, migrate, seed, studio, reset).
-- Updated living documents (HISTORY, README, FILEMAP, PLAN).
+- Added thin repository helpers in `packages/db/src/index.ts`.
+- Updated package.json with Prisma scripts; updated living documents.
 
 **Achieved:**
 - Schema covers Auth.js-compatible auth models + workspace tenancy + ICP/playbook/source configuration.
 - Soft-delete fields present on User, Workspace, Icp, Playbook.
-- Seed is idempotent (upsert) and creates a working owner account ready for Phase 4 password hashing.
-- Unique constraints: workspace slug, (workspaceId + email), (workspaceId + provider).
+- Seed is idempotent and creates a working owner account ready for Phase 4.
 
 **Open items / risks:**
-- Migration has not been applied against a live DB yet (requires local `docker compose up` + `pnpm db:migrate`).
-- Password hashing and MFA fields exist but are unused until Phase 4.
-- No leads/ledger/messaging tables yet (Phase 3).
+- Migration not applied against live DB yet.
+- Password hashing / MFA unused until Phase 4.
 
 **Commit:** feat(phase-2): database schema part A – tenancy, users, ICP, sources + seed
 
@@ -37,25 +65,10 @@ Living changelog. Newest entries at the top.
 **Goal:** Make the development experience reliable and prevent bad code from landing.
 
 **Agent actions:**
-- Added `docker-compose.yml` (Postgres 16 + Redis 7 with healthchecks).
-- Added GitHub Actions CI workflow (`.github/workflows/ci.yml`): install, placeholder-scan, lint, typecheck, unit tests, soft security audit.
-- Scaffolded real Next.js 15 App Router app under `apps/web` with TypeScript, Vitest, path aliases.
-- Implemented `/api/health` endpoint returning status, simulationMode, killSwitch flags.
-- Added unit smoke test for health contract.
-- Configured shared package (`@leadpilot/shared`) with editable agency defaults (Threezero Agency + legal address).
-- Updated root scripts (`docker:up`, `docker:down`, `docker:logs`).
-- Updated living documents (HISTORY, README, FILEMAP, PLAN).
+- Docker Compose (Postgres 16 + Redis 7), GitHub Actions CI, Next.js 15 app, `/api/health`, Vitest, shared agency defaults, living docs updated.
 
 **Achieved:**
-- `docker compose up -d` brings up Postgres + Redis.
-- CI workflow is present and will run on push/PR to main.
-- Developer can run `pnpm install && pnpm --filter @leadpilot/web dev` and hit `/api/health`.
-- Agency defaults are centralized and marked editable for later workspace settings.
-
-**Open items / risks:**
-- `pnpm-lock.yaml` will be generated on first local `pnpm install` (not committed yet; CI uses `--frozen-lockfile` once lockfile exists).
-- Playwright e2e skeleton deferred until there is more UI (Phase 5).
-- Prisma schema and real auth still Phase 2–4.
+- Local Docker + CI + health endpoint in place.
 
 **Commit:** chore(phase-1): tooling, Docker, CI, health-check, quality gates
 
@@ -63,26 +76,9 @@ Living changelog. Newest entries at the top.
 
 ## [2026-09-28] Phase 0 – Repository Bootstrap and Living Documents
 
-**Goal:** Create a clean monorepo skeleton and the five mandatory living documents so every future commit has a place to record history and rules.
+**Goal:** Clean monorepo skeleton and five mandatory living documents.
 
 **Agent actions:**
-- Initialized pnpm + Turborepo monorepo layout (`apps/`, `packages/`).
-- Added root `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `tsconfig.base.json`.
-- Created `docs/AGENT_RULES.md`, `docs/HISTORY.md`, `docs/README.md`, `docs/FILEMAP.md`, `docs/PLAN.md`.
-- Added `.env.example` listing all required keys (no values).
-- Added `scripts/placeholder-scan.mjs` that fails on TODO/FIXME/PLACEHOLDER and suspicious real-looking emails.
-- Added `.gitignore`, Prettier config.
-- Scaffolded empty package placeholders for `apps/web`, `packages/db`, `packages/shared`, `packages/workers`.
-
-**Achieved:**
-- Repository is no longer empty.
-- All five living documents exist and are non-empty.
-- `placeholder-scan` script is present and ready for CI.
-- First commit lands the bootstrap exactly as specified in Phase 0.
-
-**Open items / risks:**
-- Actual Next.js / Prisma / worker packages are still skeleton only (Phase 1+).
-- No Docker Compose, CI, or real app yet.
-- Human must still answer the intake questions before Phase 1 proceeds.
+- pnpm + Turborepo layout, docs/*, .env.example, placeholder-scan, package skeletons.
 
 **Commit:** chore: bootstrap monorepo and living documents
