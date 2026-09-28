@@ -2,7 +2,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // Compile TypeScript source from workspace packages (not pre-built dist)
+  output: 'standalone',
   transpilePackages: [
     '@leadpilot/shared',
     '@leadpilot/db',
@@ -10,7 +10,6 @@ const nextConfig: NextConfig = {
     '@leadpilot/audit',
     '@leadpilot/scoring',
   ],
-  // Native / server-only modules must not be bundled into the client
   serverExternalPackages: ['argon2', '@prisma/client', 'prisma'],
 };
 

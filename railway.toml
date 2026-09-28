@@ -1,12 +1,11 @@
-# Railway: DB is only reachable at runtime, not during image build.
-# So prisma migrate deploy runs in startCommand, not buildCommand.
+# Prefer Dockerfile so monorepo + prisma + argon2 build reliably.
+# Migrations run at container start (DB is reachable then), not at image build.
 
 [build]
-builder = "RAILPACK"
-buildCommand = "corepack enable && corepack prepare pnpm@9 --activate && pnpm install --no-frozen-lockfile && pnpm --filter @leadpilot/db exec prisma generate && pnpm --filter @leadpilot/web build"
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "pnpm --filter @leadpilot/db exec prisma migrate deploy && pnpm --filter @leadpilot/web start"
 healthcheckPath = "/api/health"
-healthcheckTimeout = 30
+healthcheckTimeout = 60
 restartPolicyType = "ON_FAILURE"
