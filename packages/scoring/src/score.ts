@@ -42,24 +42,32 @@ function factorAudit(score?: number | null): { raw: number; detail: string } {
 
 function factorRating(rating?: number | null): { raw: number; detail: string } {
   if (rating == null || Number.isNaN(rating)) return { raw: 0.3, detail: 'No rating (neutral)' };
-  // Prefer mid-high ratings for local services; very low is weak
   const raw = clamp01(rating / 5);
   return { raw, detail: `Rating ${rating.toFixed(1)}/5` };
 }
 
 function factorReviews(count?: number | null): { raw: number; detail: string } {
   if (count == null || count <= 0) return { raw: 0.2, detail: 'No reviews' };
-  // Log scale: 10 reviews ~0.5, 50+ ~0.85, 200+ ~1
   const raw = clamp01(Math.log10(count + 1) / Math.log10(201));
   return { raw, detail: `${count} reviews` };
 }
 
-function boolFactor(on: boolean | undefined, yes: string, no: string): { raw: number; detail: string } {
+function boolFactor(
+  on: boolean | undefined,
+  yes: string,
+  no: string
+): { raw: number; detail: string } {
   return on ? { raw: 1, detail: yes } : { raw: 0, detail: no };
 }
 
+type FactorPart = {
+  key: keyof ScoreWeights;
+  raw: number;
+  detail: string;
+};
+
 /**
- * Pure scoring function. Same inputs + weights always yield the same totalScore.
+ * Pure scoring function. Same inputs and weights always yield the same totalScore.
  */
 export function computeLeadScore(
   input: ScoreInput,
@@ -68,7 +76,7 @@ export function computeLeadScore(
 ): ScoreResult {
   const weightsUsed = normalizeWeights({ ...DEFAULT_WEIGHTS, ...weights });
 
-  const parts: { key: keyof ScoreWeights; ...ReturnType<typeof factorAudit> }[] = [
+  const parts: FactorPart[] = [
     { key: 'auditScore', ...factorAudit(input.auditScore) },
     { key: 'rating', ...factorRating(input.rating) },
     { key: 'reviewCount', ...factorReviews(input.reviewCount) },
@@ -86,8 +94,6 @@ export function computeLeadScore(
     },
   ];
 
-  // If ICP flags omitted, treat as fit (raw 1) already via !== false
-
   const breakdown: ScoreBreakdownItem[] = parts.map((p) => {
     const weight = weightsUsed[p.key];
     const contribution = weight * p.raw;
@@ -102,7 +108,7 @@ export function computeLeadScore(
   });
 
   const total01 = breakdown.reduce((s, b) => s + b.contribution, 0);
-  const totalScore = Math.round(clamp01(total01) * 1000) / 10; // one decimal 0-100
+  const totalScore = Math.round(clamp01(total01) * 1000) / 10;
 
   return {
     totalScore,
