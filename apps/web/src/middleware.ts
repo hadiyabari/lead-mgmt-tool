@@ -35,6 +35,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/admin') ||
     pathname.startsWith('/api/kill-switch') ||
     pathname.startsWith('/api/ledger') ||
+    pathname.startsWith('/api/workspace') ||
     pathname.startsWith('/api/sources') ||
     pathname.startsWith('/api/leads') ||
     pathname.startsWith('/api/audit') ||

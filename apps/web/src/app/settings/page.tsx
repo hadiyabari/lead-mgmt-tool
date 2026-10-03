@@ -3,9 +3,10 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@leadpilot/db';
 import { AppShell } from '@/components/AppShell';
 import { KillSwitch } from '@/components/KillSwitch';
-import { canToggleKillSwitch } from '@/lib/rbac';
+import { canToggleKillSwitch, canManageUsers } from '@/lib/rbac';
 import type { Role } from '@leadpilot/db';
 import { PasswordForm } from './PasswordForm';
+import { WorkspaceForm } from './WorkspaceForm';
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -21,19 +22,7 @@ export default async function SettingsPage() {
 
   return (
     <AppShell title="Settings" userEmail={session.user.email} userRole={role}>
-      <div className="card" style={{ marginBottom: 16 }}>
-        <div className="card-label">Workspace</div>
-        <p style={{ margin: '0.35rem 0' }}>
-          <strong>{workspace?.name}</strong>
-        </p>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Slug: {workspace?.slug}</p>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-          Legal address: {workspace?.legalAddress || 'Not set'}
-        </p>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-          Primary domain: {workspace?.primaryDomain || 'Not set'}
-        </p>
-      </div>
+      <WorkspaceForm canEdit={canManageUsers(role)} />
 
       <div className="card" style={{ marginBottom: 16 }}>
         <div className="card-label">Runtime flags</div>
