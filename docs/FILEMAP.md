@@ -1,9 +1,10 @@
-# FILEMAP – LeadPilot Retainer Edition
+# FILEMAP
 
-## Phase 14–15
+## Phase 16
 
 | Path | Purpose |
 |------|---------|
-| `packages/email-send` | Simulation + Postmark send |
-| `apps/web/src/app/api/outbox/*` | List, edit, submit, approve, reject, send |
-| `apps/web/src/app/dashboard/outbox` | Operator UI |
+| `packages/replies` | classifyReply |
+| `apps/web/src/app/api/replies/inbound` | Webhook |
+| `apps/web/src/app/api/replies` | List |
+| `apps/web/src/app/dashboard/replies` | UI |

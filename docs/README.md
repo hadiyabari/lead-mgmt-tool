@@ -1,7 +1,5 @@
 # LeadPilot Retainer Edition
 
-Phases 0–15 complete.
+Phases 0–16 complete.
 
-Outbox: `/dashboard/outbox`
-
-Flow: draft-email → submit/approve → send (simulation unless POSTMARK_API_TOKEN and SIMULATION_MODE=false).
+Inbound replies: `POST /api/replies/inbound` with header `x-leadpilot-inbound-secret` when `INBOUND_WEBHOOK_SECRET` is set.

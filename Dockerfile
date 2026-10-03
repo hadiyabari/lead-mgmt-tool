@@ -1,4 +1,3 @@
-# LeadPilot production image (Railway-friendly monorepo)
 FROM node:22-bookworm-slim
 
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
@@ -18,6 +17,7 @@ COPY packages/audit/package.json ./packages/audit/
 COPY packages/scoring/package.json ./packages/scoring/
 COPY packages/email-gen/package.json ./packages/email-gen/
 COPY packages/email-send/package.json ./packages/email-send/
+COPY packages/replies/package.json ./packages/replies/
 
 RUN pnpm install --no-frozen-lockfile
 

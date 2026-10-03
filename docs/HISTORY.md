@@ -4,33 +4,30 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 14–15 – Outbox approval + send path
+## [2026-10-03] Phase 16 – Reply intake and classification
 
-**Goal:** Review queue for drafts; send only after approval with final ledger gate.
+**Goal:** Capture inbound replies, classify, update lead and suppression.
 
-**Agent actions (14):**
-- Outbox list API with status filter and counts
-- submit (DRAFT→PENDING_REVIEW), approve, reject, PATCH edit
-- Dashboard `/dashboard/outbox` with actions
-
-**Agent actions (15):**
-- Package `@leadpilot/email-send` (simulation default, Postmark when token set)
-- Send API: claim APPROVED row, fourPointCheck, send, EmailSent record, lead CONTACTED, ledgerInsert OUTBOUND_SEND
-- Kill switch blocks send
-- Row lock via lockedAt/lockedBy
+**Agent actions:**
+- Package `@leadpilot/replies` with deterministic rule classifier (unsub, bounce, OOO, interested, objection).
+- `POST /api/replies/inbound` webhook (Postmark-shaped or generic JSON), secret via `INBOUND_WEBHOOK_SECRET`.
+- Match to EmailSent / lead; store Reply; update lead status; suppress + ledger on UNSUBSCRIBE.
+- `GET /api/replies` list; manual reclassify API.
+- Dashboard `/dashboard/replies`.
+- Unit tests for classifier.
 
 **Achieved:**
-- Full draft → review → approve → send loop in simulation
-- Never-contacted enforced at send time again
+- End-to-end reply path without LLM.
+- Unsubscribe permanently blocks via suppression list.
 
 **Open items:**
-- Bulk approve/send
-- Reply ingestion (Phase 16+)
+- Meeting booking flow (Phase 17).
+- Provider-specific signature verification beyond shared secret.
 
-**Commit:** feat(phase-14-15): outbox review queue + send path with ledger gate
+**Commit:** feat(phase-16): inbound reply intake, classification, suppression on unsubscribe
 
 ---
 
 ## Prior
 
-Phases 0–13 on main.
+Phases 0–15 on main.

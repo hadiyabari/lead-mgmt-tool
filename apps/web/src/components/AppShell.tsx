@@ -6,6 +6,7 @@ const NAV = [
   { href: '/dashboard/leads', label: 'Leads' },
   { href: '/dashboard/sources', label: 'Sources' },
   { href: '/dashboard/outbox', label: 'Outbox' },
+  { href: '/dashboard/replies', label: 'Replies' },
   { href: '/dashboard/runs', label: 'Runs' },
   { href: '/dashboard/campaigns', label: 'Campaigns' },
   { href: '/dashboard/ledger', label: 'Contact ledger' },

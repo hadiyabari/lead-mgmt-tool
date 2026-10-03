@@ -16,6 +16,7 @@ const publicPaths = [
   '/api/health',
   '/api/analytics',
   '/api/contact-sales',
+  '/api/replies/inbound',
 ];
 
 export async function middleware(req: NextRequest) {
@@ -38,6 +39,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/api/leads') ||
     pathname.startsWith('/api/audit') ||
     pathname.startsWith('/api/outbox') ||
+    pathname.startsWith('/api/replies') ||
     pathname.startsWith('/api/admin')
   ) {
     const token = await getToken({ req, secret: process.env.AUTH_SECRET });
