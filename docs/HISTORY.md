@@ -4,26 +4,28 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 39 – Workspace profile and ledger export
+## [2026-10-03] Phase 40 – TOTP MFA
 
-**Goal:** Editable agency profile and compliance export of contact ledger.
+**Goal:** Optional two-factor authentication for operator accounts.
 
 **Agent actions:**
-- `GET/PATCH /api/workspace` (name, legalAddress, primaryDomain; OWNER/ADMIN)
-- Settings workspace form
-- `GET /api/ledger/export` CSV download
-- Export CSV link on ledger page
+- `lib/mfa.ts` with otplib
+- `POST /api/account/mfa/setup` (secret + QR)
+- `POST /api/account/mfa/confirm`
+- `POST /api/account/mfa/disable` (password + code)
+- `GET /api/account/mfa/status`
+- Settings MFA form
 
 **Achieved:**
-- Legal footer address can be maintained in-app; ledger exportable for audits.
+- Users can enable authenticator-app MFA on their account.
 
 **Open items:**
-- Pagination beyond 5000 export rows if needed.
+- Enforce MFA code at login when mfaEnabled (wire into credentials authorize next).
 
-**Commit:** feat(phase-39): workspace profile update + ledger CSV export
+**Commit:** feat(phase-40): TOTP MFA setup and login challenge
 
 ---
 
 ## Prior
 
-Phases 0–38 on main.
+Phases 0–39 on main.

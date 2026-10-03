@@ -7,6 +7,7 @@ import { canToggleKillSwitch, canManageUsers } from '@/lib/rbac';
 import type { Role } from '@leadpilot/db';
 import { PasswordForm } from './PasswordForm';
 import { WorkspaceForm } from './WorkspaceForm';
+import { MfaForm } from './MfaForm';
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -41,6 +42,7 @@ export default async function SettingsPage() {
       </div>
 
       <PasswordForm />
+      <MfaForm />
     </AppShell>
   );
 }

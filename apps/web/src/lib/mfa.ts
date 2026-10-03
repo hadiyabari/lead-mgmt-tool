@@ -1,10 +1,17 @@
 import { authenticator } from 'otplib';
-import QRCode from 'qrcode';
 
 authenticator.options = { window: 1 };
 
 export function generateMfaSecret(): string {
   return authenticator.generateSecret();
+}
+
+export function mfaOtpauthUrl(opts: { email: string; secret: string; issuer?: string }): string {
+  return authenticator.keyuri(
+    opts.email,
+    opts.issuer || 'LeadPilot',
+    opts.secret
+  );
 }
 
 export function verifyMfaToken(secret: string, token: string): boolean {
@@ -13,12 +20,4 @@ export function verifyMfaToken(secret: string, token: string): boolean {
   } catch {
     return false;
   }
-}
-
-export function getMfaOtpauthUrl(secret: string, email: string, issuer = 'LeadPilot'): string {
-  return authenticator.keyuri(email, issuer, secret);
-}
-
-export async function getMfaQrDataUrl(otpauthUrl: string): Promise<string> {
-  return QRCode.toDataURL(otpauthUrl);
 }
