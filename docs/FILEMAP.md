@@ -1,8 +1,8 @@
 # FILEMAP
 
-## Phase 32
+## Phase 33
 
 | Path | Purpose |
 |------|---------|
-| `apps/web/src/app/api/sources/discover-batch` | Multi-source discover |
-| `apps/web/src/app/dashboard/sources` | Operator UI |
+| `apps/web/src/app/api/team` | Team CRUD |
+| `apps/web/src/app/dashboard/team` | Team UI |

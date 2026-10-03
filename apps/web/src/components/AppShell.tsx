@@ -13,6 +13,7 @@ const NAV = [
   { href: '/dashboard/runs', label: 'Runs' },
   { href: '/dashboard/campaigns', label: 'Campaigns' },
   { href: '/dashboard/ledger', label: 'Contact ledger' },
+  { href: '/dashboard/team', label: 'Team' },
   { href: '/settings', label: 'Settings' },
 ];
 
@@ -28,6 +29,7 @@ export function AppShell({
   userRole?: string | null;
 }) {
   const showAdmin = userRole === 'SUPER_ADMIN';
+  const showTeam = userRole === 'OWNER' || userRole === 'ADMIN' || userRole === 'SUPER_ADMIN';
 
   return (
     <div className="app-shell">
@@ -37,7 +39,7 @@ export function AppShell({
           <span>Threezero Agency</span>
         </div>
         <ul className="nav-list">
-          {NAV.map((item) => (
+          {NAV.filter((item) => item.href !== '/dashboard/team' || showTeam).map((item) => (
             <li key={item.href}>
               <Link href={item.href}>{item.label}</Link>
             </li>

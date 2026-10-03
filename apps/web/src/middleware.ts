@@ -44,6 +44,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/api/campaigns') ||
     pathname.startsWith('/api/playbooks') ||
     pathname.startsWith('/api/icps') ||
+    pathname.startsWith('/api/team') ||
     pathname.startsWith('/api/runs') ||
     pathname.startsWith('/api/costs') ||
     pathname.startsWith('/api/suppression') ||
