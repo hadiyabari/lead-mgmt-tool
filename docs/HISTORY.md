@@ -4,28 +4,27 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 24–26 – Final QA, release, closeout
+## [2026-10-03] Phase 27 – Bulk outbox + playbooks
 
-**Goal:** Ship v1.0.0 documentation and close the phase plan.
+**Goal:** Post-v1 operator throughput: bulk outbox actions and playbook CRUD.
 
 **Agent actions:**
-- Phase 24: `docs/QA_NOTES.md` with static and manual QA steps
-- Phase 25: `docs/RELEASE_NOTES.md` for v1.0.0
-- Phase 26: version bump to 1.0.0, `docs/REFERENCES.md`, PLAN closed, root README updated
-- Confirmed analytics JSON meta cast remains in place for production builds
+- `POST /api/outbox/bulk` for submit, approve, reject, send (max 50 ids; send reuses ledger gates)
+- Outbox UI selection + bulk buttons
+- `GET/POST /api/playbooks`, `PATCH/DELETE /api/playbooks/:id`
+- Dashboard `/dashboard/playbooks`
 
 **Achieved:**
-- Phase plan 0–26 marked complete
-- Operators have release, ops, compliance, ship checklist, and QA guidance
+- Operators can approve/send batches without one-by-one clicks
+- Offer copy managed via playbooks for drafts
 
-**Open items / risks:**
-- Live registry discovery and calendar sync deferred post-v1
-- Railway deploy must keep migrate on container start only
+**Open items:**
+- Live registry discovery still optional Phase 28+
 
-**Commit:** release(v1.0.0): phases 24-26 final QA, release notes, ship closeout
+**Commit:** feat(phase-27): bulk outbox actions + playbook CRUD
 
 ---
 
 ## Prior
 
-Phases 0–23 on main (pipeline, outbox, replies, meetings, campaigns, hardening, polish).
+v1.0.0 phases 0–26 on main.
