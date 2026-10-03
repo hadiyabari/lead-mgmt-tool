@@ -49,9 +49,14 @@ export function AppShell({
             </li>
           ))}
           {showAnalytics && (
-            <li>
-              <Link href="/admin/analytics">Site analytics</Link>
-            </li>
+            <>
+              <li>
+                <Link href="/admin/analytics">Site analytics</Link>
+              </li>
+              <li>
+                <Link href="/admin/contact-sales">Contact sales</Link>
+              </li>
+            </>
           )}
           {showAdmin && (
             <li>

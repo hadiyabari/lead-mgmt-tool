@@ -60,6 +60,16 @@ export function SuppressionClient() {
     await load();
   }
 
+  async function remove(id: string) {
+    const res = await fetch(`/api/suppression/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error || 'Delete failed');
+      return;
+    }
+    await load();
+  }
+
   return (
     <div>
       <form
@@ -118,16 +128,25 @@ export function SuppressionClient() {
               border: '1px solid #2d3a4f',
               borderRadius: 12,
               padding: 14,
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              flexWrap: 'wrap',
             }}
           >
-            <div style={{ fontWeight: 600 }}>
-              {item.normalizedEmail || item.normalizedPhone || item.domain || '—'}
+            <div>
+              <div style={{ fontWeight: 600 }}>
+                {item.normalizedEmail || item.normalizedPhone || item.domain || '—'}
+              </div>
+              <div style={{ color: '#8b9bb4', fontSize: 13, marginTop: 4 }}>
+                {[item.reason, item.source, new Date(item.createdAt).toLocaleString()]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </div>
             </div>
-            <div style={{ color: '#8b9bb4', fontSize: 13, marginTop: 4 }}>
-              {[item.reason, item.source, new Date(item.createdAt).toLocaleString()]
-                .filter(Boolean)
-                .join(' · ')}
-            </div>
+            <button type="button" style={btnStyle} onClick={() => remove(item.id)}>
+              Remove
+            </button>
           </div>
         ))}
       </div>

@@ -4,25 +4,25 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 37 – Password change and lead meeting book
+## [2026-10-03] Phase 38 – Contact-sales inbox and suppression delete
 
-**Goal:** Account security and faster meeting booking from lead detail.
+**Goal:** Review marketing contact form submissions; remove suppression entries.
 
 **Agent actions:**
-- `POST /api/account/password` with current password verify + strength checks
-- Settings password form
-- Lead detail form to schedule meeting for that lead
+- `GET /api/admin/contact-sales` from SiteEvent contact_sales
+- UI `/admin/contact-sales` for OWNER/ADMIN/SUPER_ADMIN
+- `DELETE /api/suppression/:id` + Remove button in Suppression UI
 
 **Achieved:**
-- Operators can rotate passwords and book meetings without copying lead IDs.
+- Sales leads from the public form are visible in-app.
 
 **Open items:**
-- Email-based password reset still optional.
+- Email notify on new contact_sales optional.
 
-**Commit:** feat(phase-37): password change + book meeting from lead detail
+**Commit:** feat(phase-38): contact-sales inbox + suppression delete
 
 ---
 
 ## Prior
 
-Phases 0–36 on main.
+Phases 0–37 on main.
