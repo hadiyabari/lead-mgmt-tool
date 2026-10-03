@@ -1,8 +1,8 @@
 # FILEMAP
 
-## Phase 35
+## Phase 36
 
 | Path | Purpose |
 |------|---------|
-| `apps/web/src/app/api/admin/analytics` | Analytics API |
-| `apps/web/src/app/admin/analytics` | Dashboard UI |
+| `apps/web/src/app/dashboard/suppression` | Suppression UI |
+| `apps/web/src/app/dashboard/costs` | Costs UI |

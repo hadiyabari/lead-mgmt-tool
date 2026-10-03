@@ -4,25 +4,25 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 35 – Site analytics dashboard
+## [2026-10-03] Phase 36 – Suppression and costs UI
 
-**Goal:** Operator view of first-party marketing SiteEvent data.
+**Goal:** Operator surfaces for suppression list and cost ledger APIs.
 
 **Agent actions:**
-- `GET /api/admin/analytics?days=7|30|90`
-- Totals, unique sessions, by event name, path, UTM source, recent stream
-- UI `/admin/analytics` for OWNER/ADMIN/SUPER_ADMIN
+- `/dashboard/suppression` list + add email/phone/domain
+- `/dashboard/costs` totals by category + recent entries
+- Sidebar links for both
 
 **Achieved:**
-- Marketing traffic visibility without third-party dashboard dependency.
+- Compliance and spend visibility without API-only access.
 
 **Open items:**
-- Export CSV optional later.
+- Delete suppression entry endpoint optional.
 
-**Commit:** feat(phase-35): admin site analytics dashboard
+**Commit:** feat(phase-36): suppression UI + cost ledger dashboard
 
 ---
 
 ## Prior
 
-Phases 0–34 on main.
+Phases 0–35 on main.
