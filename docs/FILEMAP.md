@@ -1,9 +1,8 @@
 # FILEMAP
 
-## Phase 30
+## Phase 31
 
 | Path | Purpose |
 |------|---------|
-| `packages/calendar` | ICS + calendar URLs |
-| `apps/web/src/app/api/meetings/[id]/ics` | ICS download |
-| `apps/web/src/app/api/meetings/[id]/calendar-links` | Google/Outlook links |
+| `apps/web/src/app/api/sources/discover` | Run adapter discover + persist |
+| `apps/web/src/app/api/sources/adapters` | List adapters |

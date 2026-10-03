@@ -4,23 +4,35 @@
 
 | Flag | Effect |
 |------|--------|
-| `SIMULATION_MODE=true` | No live email; template drafts; simulated audit |
-| `KILL_SWITCH=true` | Blocks runs, campaign activate, send |
-| Workspace kill switch | Same, per tenant |
+| `SIMULATION_MODE=true` | No live email; template drafts; simulated audit/discover |
+| `KILL_SWITCH=true` | Blocks runs, campaign activate, send, discover |
+
+## Discover
+
+```http
+POST /api/sources/discover
+{ "provider": "NPI_US", "country": "US", "limit": 5, "simulation": true }
+```
+
+Live mode requires the workspace SourceConfig `isEnabled=true` and provider env keys when the adapter needs them.
 
 ## Required production env
 
 - `DATABASE_URL`
-- `AUTH_SECRET` (32+ chars)
-- `AUTH_URL` / `NEXTAUTH_URL` (public HTTPS URL)
-- `SIMULATION_MODE` (start `true` until providers ready)
+- `AUTH_SECRET`
+- `AUTH_URL` / `NEXTAUTH_URL`
+- `SIMULATION_MODE` (start `true`)
 
-## Optional
+## Optional provider keys
 
-- `ANTHROPIC_API_KEY` for live email copy
-- `POSTMARK_API_TOKEN` + `EMAIL_FROM` for live send
-- `INBOUND_WEBHOOK_SECRET` for reply webhook
-- Registry API keys when leaving simulation discovery
+- `COMPANIES_HOUSE_API_KEY`
+- `ABN_LOOKUP_GUID`
+- `GOOGLE_PLACES_API_KEY`
+- `YELP_API_KEY`
+- `ANTHROPIC_API_KEY`
+- `POSTMARK_API_TOKEN`
+- `EMAIL_FROM`
+- `INBOUND_WEBHOOK_SECRET`
 
 ## Smoke
 
@@ -28,16 +40,4 @@
 BASE_URL=https://your-host ./scripts/smoke.sh
 ```
 
-## First login
-
-After seed: `owner@threezero.agency` (change password immediately).
-
-## Compliance gates
-
-1. Ledger before draft
-2. Ledger + suppression before send
-3. Unsubscribe adds suppression + ledger SUPPRESSION
-
-## Sales contact
-
-03293318181 (Contact Sales only; no public self-serve signup).
+Contact Sales: 03293318181

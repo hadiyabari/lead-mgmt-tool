@@ -4,27 +4,28 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 30 – Meeting calendar export
+## [2026-10-03] Phase 31 – Registry discover API
 
-**Goal:** Export meetings to calendar clients without OAuth calendar sync.
+**Goal:** Wire built-in source adapters into an operator discover endpoint that can persist leads.
 
 **Agent actions:**
-- Package `@leadpilot/calendar`: ICS builder, Google Calendar and Outlook web links
-- `GET /api/meetings/:id/ics` download
-- `GET /api/meetings/:id/calendar-links` JSON links
-- Meetings UI: Download ICS, Google Calendar, Outlook buttons
-- Unit tests for ICS and Google URL
+- `POST /api/sources/discover` runs primary adapter discover (NPI, Companies House, ABN, etc.)
+- Respects kill switch, simulation flag, workspace source enablement for live mode
+- Dedupes by domain; writes Lead rows as DISCOVERED
+- Records cost ledger entry
+- `GET /api/sources/adapters` lists registered adapters
 
 **Achieved:**
-- Operators can add meetings to local or web calendars.
+- Discover path is no longer limited to hard-coded sample leads in the run executor.
 
 **Open items:**
-- Full Google/Outlook OAuth sync remains optional later.
+- Live keys: COMPANIES_HOUSE_API_KEY, ABN_LOOKUP_GUID, etc. still optional
+- Batch discover across all enabled sources
 
-**Commit:** feat(phase-30): meeting ICS export + calendar booking links
+**Commit:** feat(phase-31): registry discover API + lead persistence from adapters
 
 ---
 
 ## Prior
 
-Phases 0–29 on main.
+Phases 0–30 on main.
