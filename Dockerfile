@@ -18,6 +18,7 @@ COPY packages/scoring/package.json ./packages/scoring/
 COPY packages/email-gen/package.json ./packages/email-gen/
 COPY packages/email-send/package.json ./packages/email-send/
 COPY packages/replies/package.json ./packages/replies/
+COPY packages/calendar/package.json ./packages/calendar/
 
 RUN pnpm install --no-frozen-lockfile
 

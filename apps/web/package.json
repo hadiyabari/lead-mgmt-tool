@@ -13,6 +13,7 @@
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
     "@leadpilot/audit": "workspace:*",
+    "@leadpilot/calendar": "workspace:*",
     "@leadpilot/db": "workspace:*",
     "@leadpilot/email-gen": "workspace:*",
     "@leadpilot/email-send": "workspace:*",

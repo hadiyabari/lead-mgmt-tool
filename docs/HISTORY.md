@@ -4,27 +4,27 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 29 – ICPs + SUPER_ADMIN provisioning
+## [2026-10-03] Phase 30 – Meeting calendar export
 
-**Goal:** Tenant ICP management and platform-level workspace creation.
+**Goal:** Export meetings to calendar clients without OAuth calendar sync.
 
 **Agent actions:**
-- `GET/POST /api/icps`, `PATCH/DELETE /api/icps/:id`
-- Dashboard `/dashboard/icps`
-- `GET/POST /api/admin/workspaces` (SUPER_ADMIN only) creates workspace + OWNER
-- `POST /api/admin/users` (SUPER_ADMIN only)
-- `/admin/tenants` UI; nav link for SUPER_ADMIN only
+- Package `@leadpilot/calendar`: ICS builder, Google Calendar and Outlook web links
+- `GET /api/meetings/:id/ics` download
+- `GET /api/meetings/:id/calendar-links` JSON links
+- Meetings UI: Download ICS, Google Calendar, Outlook buttons
+- Unit tests for ICS and Google URL
 
 **Achieved:**
-- Multi-tenant provisioning path matches product rules (no public signup).
+- Operators can add meetings to local or web calendars.
 
 **Open items:**
-- Promote a seeded SUPER_ADMIN user when needed (role assign via DB or admin API).
+- Full Google/Outlook OAuth sync remains optional later.
 
-**Commit:** feat(phase-29): ICP management + SUPER_ADMIN workspace provisioning
+**Commit:** feat(phase-30): meeting ICS export + calendar booking links
 
 ---
 
 ## Prior
 
-Phases 0–27 on main.
+Phases 0–29 on main.

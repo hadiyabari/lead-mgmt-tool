@@ -72,6 +72,20 @@ export function MeetingsClient() {
     await load();
   }
 
+  async function openCalendar(id: string, provider: 'google' | 'outlook' | 'ics') {
+    if (provider === 'ics') {
+      window.location.href = `/api/meetings/${id}/ics`;
+      return;
+    }
+    const res = await fetch(`/api/meetings/${id}/calendar-links`);
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.error || 'Links failed');
+      return;
+    }
+    window.open(provider === 'google' ? data.google : data.outlook, '_blank');
+  }
+
   return (
     <div>
       <form
@@ -137,6 +151,15 @@ export function MeetingsClient() {
               </a>
             )}
             <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
+              <button type="button" style={btnStyle} onClick={() => openCalendar(m.id, 'ics')}>
+                Download ICS
+              </button>
+              <button type="button" style={btnStyle} onClick={() => openCalendar(m.id, 'google')}>
+                Google Calendar
+              </button>
+              <button type="button" style={btnStyle} onClick={() => openCalendar(m.id, 'outlook')}>
+                Outlook
+              </button>
               {['COMPLETED', 'CANCELLED', 'NO_SHOW'].map((s) => (
                 <button key={s} type="button" style={btnStyle} onClick={() => setStatus(m.id, s)}>
                   {s}
