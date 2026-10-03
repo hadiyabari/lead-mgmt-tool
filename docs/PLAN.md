@@ -4,6 +4,7 @@
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| 0–15 | Bootstrap through send | **DONE** |
-| 16 | Reply intake and classification | **DONE** |
-| 17–25 | Meetings, hardening, ship | Pending |
+| 0–16 | Bootstrap through replies | **DONE** |
+| 17 | Meeting booking | **DONE** |
+| 18 | Campaign activation | **DONE** |
+| 19–25 | Hardening, e2e, ship | Pending |

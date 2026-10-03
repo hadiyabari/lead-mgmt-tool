@@ -1,10 +1,10 @@
 # FILEMAP
 
-## Phase 16
+## Phase 17–18
 
 | Path | Purpose |
 |------|---------|
-| `packages/replies` | classifyReply |
-| `apps/web/src/app/api/replies/inbound` | Webhook |
-| `apps/web/src/app/api/replies` | List |
-| `apps/web/src/app/dashboard/replies` | UI |
+| `apps/web/src/app/api/meetings` | Meeting CRUD |
+| `apps/web/src/app/dashboard/meetings` | UI |
+| `apps/web/src/app/api/campaigns` | Campaign CRUD + attach outbox |
+| `apps/web/src/app/dashboard/campaigns` | UI |

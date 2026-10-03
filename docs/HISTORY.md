@@ -4,30 +4,31 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 16 – Reply intake and classification
+## [2026-10-03] Phase 17–18 – Meetings + campaigns
 
-**Goal:** Capture inbound replies, classify, update lead and suppression.
+**Goal:** Book meetings from pipeline; manage campaigns and attach outbox.
 
-**Agent actions:**
-- Package `@leadpilot/replies` with deterministic rule classifier (unsub, bounce, OOO, interested, objection).
-- `POST /api/replies/inbound` webhook (Postmark-shaped or generic JSON), secret via `INBOUND_WEBHOOK_SECRET`.
-- Match to EmailSent / lead; store Reply; update lead status; suppress + ledger on UNSUBSCRIBE.
-- `GET /api/replies` list; manual reclassify API.
-- Dashboard `/dashboard/replies`.
-- Unit tests for classifier.
+**Agent actions (17):**
+- `GET/POST /api/meetings`, `PATCH /api/meetings/:id`
+- Lead status MEETING_BOOKED on create; WON/LOST on completed/cancelled/no-show
+- Dashboard `/dashboard/meetings`
+
+**Agent actions (18):**
+- `GET/POST /api/campaigns`, `PATCH` status (ACTIVE blocked by kill switch)
+- `POST /api/campaigns/:id/attach-outbox`
+- Real campaigns UI (replaced placeholder)
 
 **Achieved:**
-- End-to-end reply path without LLM.
-- Unsubscribe permanently blocks via suppression list.
+- Meeting and campaign operator flows live.
 
 **Open items:**
-- Meeting booking flow (Phase 17).
-- Provider-specific signature verification beyond shared secret.
+- External calendar sync (Google/Outlook) later.
+- Auto-draft batch into campaign from qualified leads.
 
-**Commit:** feat(phase-16): inbound reply intake, classification, suppression on unsubscribe
+**Commit:** feat(phase-17-18): meetings booking + campaign activation
 
 ---
 
 ## Prior
 
-Phases 0–15 on main.
+Phases 0–16 on main.

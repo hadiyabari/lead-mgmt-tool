@@ -1,5 +1,5 @@
 # LeadPilot Retainer Edition
 
-Phases 0–16 complete.
+Phases 0–18 complete.
 
-Inbound replies: `POST /api/replies/inbound` with header `x-leadpilot-inbound-secret` when `INBOUND_WEBHOOK_SECRET` is set.
+Meetings: `/dashboard/meetings` · Campaigns: `/dashboard/campaigns`

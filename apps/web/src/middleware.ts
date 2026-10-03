@@ -40,6 +40,8 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/api/audit') ||
     pathname.startsWith('/api/outbox') ||
     pathname.startsWith('/api/replies') ||
+    pathname.startsWith('/api/meetings') ||
+    pathname.startsWith('/api/campaigns') ||
     pathname.startsWith('/api/admin')
   ) {
     const token = await getToken({ req, secret: process.env.AUTH_SECRET });
