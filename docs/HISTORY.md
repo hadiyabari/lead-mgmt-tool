@@ -4,25 +4,25 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 36 – Suppression and costs UI
+## [2026-10-03] Phase 37 – Password change and lead meeting book
 
-**Goal:** Operator surfaces for suppression list and cost ledger APIs.
+**Goal:** Account security and faster meeting booking from lead detail.
 
 **Agent actions:**
-- `/dashboard/suppression` list + add email/phone/domain
-- `/dashboard/costs` totals by category + recent entries
-- Sidebar links for both
+- `POST /api/account/password` with current password verify + strength checks
+- Settings password form
+- Lead detail form to schedule meeting for that lead
 
 **Achieved:**
-- Compliance and spend visibility without API-only access.
+- Operators can rotate passwords and book meetings without copying lead IDs.
 
 **Open items:**
-- Delete suppression entry endpoint optional.
+- Email-based password reset still optional.
 
-**Commit:** feat(phase-36): suppression UI + cost ledger dashboard
+**Commit:** feat(phase-37): password change + book meeting from lead detail
 
 ---
 
 ## Prior
 
-Phases 0–35 on main.
+Phases 0–36 on main.

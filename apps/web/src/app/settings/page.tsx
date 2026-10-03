@@ -5,6 +5,7 @@ import { AppShell } from '@/components/AppShell';
 import { KillSwitch } from '@/components/KillSwitch';
 import { canToggleKillSwitch } from '@/lib/rbac';
 import type { Role } from '@leadpilot/db';
+import { PasswordForm } from './PasswordForm';
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -36,9 +37,7 @@ export default async function SettingsPage() {
 
       <div className="card" style={{ marginBottom: 16 }}>
         <div className="card-label">Runtime flags</div>
-        <p style={{ marginTop: 8 }}>
-          Simulation mode: {simulation ? 'ON' : 'OFF'}
-        </p>
+        <p style={{ marginTop: 8 }}>Simulation mode: {simulation ? 'ON' : 'OFF'}</p>
         <p>Anthropic key: {process.env.ANTHROPIC_API_KEY ? 'configured' : 'not set'}</p>
         <p>Postmark token: {process.env.POSTMARK_API_TOKEN ? 'configured' : 'not set'}</p>
         <p>Inbound secret: {process.env.INBOUND_WEBHOOK_SECRET ? 'configured' : 'not set'}</p>
@@ -46,11 +45,13 @@ export default async function SettingsPage() {
 
       <KillSwitch initialActive={killActive} canToggle={canToggleKillSwitch(role)} />
 
-      <div className="card" style={{ marginTop: 16 }}>
+      <div className="card" style={{ marginTop: 16, marginBottom: 16 }}>
         <div className="card-label">Your account</div>
         <p style={{ marginTop: 8 }}>{session.user.email}</p>
         <p style={{ color: 'var(--text-muted)' }}>Role: {role}</p>
       </div>
+
+      <PasswordForm />
     </AppShell>
   );
 }

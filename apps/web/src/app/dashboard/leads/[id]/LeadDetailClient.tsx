@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 
 type LeadDetail = {
   id: string;
@@ -29,6 +29,8 @@ export function LeadDetailClient({ id }: { id: string }) {
   const [lead, setLead] = useState<LeadDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [startsAt, setStartsAt] = useState('');
+  const [meetingUrl, setMeetingUrl] = useState('');
 
   const load = useCallback(async () => {
     const res = await fetch(`/api/leads/${id}`);
@@ -55,6 +57,29 @@ export function LeadDetailClient({ id }: { id: string }) {
     });
     const data = await res.json();
     if (!res.ok) setError(data.error || `${path} failed`);
+    await load();
+    setBusy(null);
+  }
+
+  async function bookMeeting(e: FormEvent) {
+    e.preventDefault();
+    setBusy('meeting');
+    setError(null);
+    const res = await fetch('/api/meetings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        leadId: id,
+        startsAt: new Date(startsAt).toISOString(),
+        meetingUrl: meetingUrl || null,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) setError(data.error || 'Meeting failed');
+    else {
+      setStartsAt('');
+      setMeetingUrl('');
+    }
     await load();
     setBusy(null);
   }
@@ -101,9 +126,7 @@ export function LeadDetailClient({ id }: { id: string }) {
           {lead.primaryEmail && <div>{lead.primaryEmail}</div>}
           {lead.primaryPhone && <div>{lead.primaryPhone}</div>}
           {(lead.city || lead.region) && (
-            <div>
-              {[lead.city, lead.region].filter(Boolean).join(', ')}
-            </div>
+            <div>{[lead.city, lead.region].filter(Boolean).join(', ')}</div>
           )}
         </div>
 
@@ -123,6 +146,38 @@ export function LeadDetailClient({ id }: { id: string }) {
         </div>
         {error && <p style={{ color: '#f87171', marginTop: 10 }}>{error}</p>}
       </div>
+
+      <form
+        onSubmit={bookMeeting}
+        style={{
+          background: '#1a2332',
+          border: '1px solid #2d3a4f',
+          borderRadius: 12,
+          padding: 14,
+          marginBottom: 16,
+          display: 'grid',
+          gap: 10,
+          maxWidth: 420,
+        }}
+      >
+        <strong>Book meeting</strong>
+        <input
+          type="datetime-local"
+          required
+          value={startsAt}
+          onChange={(e) => setStartsAt(e.target.value)}
+          style={inputStyle}
+        />
+        <input
+          value={meetingUrl}
+          onChange={(e) => setMeetingUrl(e.target.value)}
+          placeholder="Meeting URL"
+          style={inputStyle}
+        />
+        <button type="submit" style={btnStyle} disabled={!!busy}>
+          {busy === 'meeting' ? '…' : 'Schedule'}
+        </button>
+      </form>
 
       <Section title="Scores">
         {(lead.scores || []).length === 0 && <Empty />}
@@ -221,4 +276,12 @@ const btnStyle: React.CSSProperties = {
   padding: '6px 10px',
   color: '#e7ecf3',
   cursor: 'pointer',
+};
+
+const inputStyle: React.CSSProperties = {
+  background: '#0a1018',
+  border: '1px solid #2d3a4f',
+  borderRadius: 8,
+  padding: '8px 10px',
+  color: '#e7ecf3',
 };
