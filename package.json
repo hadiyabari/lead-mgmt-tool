@@ -1,6 +1,6 @@
 {
   "name": "leadpilot-retainer",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "LeadPilot Retainer Edition – high-value local service lead generation, scoring, grounded outreach and booking",
   "packageManager": "pnpm@9.15.0",
@@ -16,6 +16,7 @@
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
+    "smoke": "bash scripts/smoke.sh",
     "railway:build": "pnpm --filter @leadpilot/db exec prisma generate && pnpm --filter @leadpilot/web build",
     "railway:start": "pnpm --filter @leadpilot/db exec prisma migrate deploy && pnpm --filter @leadpilot/web start"
   },

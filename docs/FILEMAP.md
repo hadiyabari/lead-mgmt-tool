@@ -1,39 +1,38 @@
-# FILEMAP – LeadPilot Retainer Edition
+# FILEMAP – LeadPilot Retainer Edition v1.0.0
 
 ## Apps
 
 | Path | Role |
 |------|------|
-| `apps/web` | Next.js 15 app (marketing + dashboard + APIs) |
+| `apps/web` | Next.js 15 marketing + dashboard + APIs |
 
 ## Packages
 
 | Package | Role |
 |---------|------|
-| `@leadpilot/db` | Prisma schema, ledger, client |
+| `@leadpilot/db` | Prisma, ledger |
 | `@leadpilot/shared` | Normalize, CSV |
-| `@leadpilot/sources` | Registry adapters |
+| `@leadpilot/sources` | Adapters |
 | `@leadpilot/audit` | Audit client |
-| `@leadpilot/scoring` | Lead scoring |
+| `@leadpilot/scoring` | Scoring |
 | `@leadpilot/email-gen` | Grounded drafts |
-| `@leadpilot/email-send` | Simulation / Postmark |
-| `@leadpilot/replies` | Reply classifier |
+| `@leadpilot/email-send` | Send |
+| `@leadpilot/replies` | Classifier |
 
-## Key APIs
+## Docs (release set)
 
-| Route | Purpose |
-|-------|---------|
-| `/api/health` | Liveness (+ `?deep=1` DB) |
-| `/api/leads` | Lead list |
-| `/api/leads/:id/draft-email` | Draft |
-| `/api/outbox/*` | Review + send |
-| `/api/replies/inbound` | Webhook |
-| `/api/runs/:id/execute` | E2E simulation |
-| `/api/meetings` | Booking |
-| `/api/campaigns` | Campaigns |
-| `/api/costs` | Cost ledger |
-| `/api/suppression` | Suppression |
-
-## Docs
-
-`PLAN.md` `HISTORY.md` `FILEMAP.md` `OPERATIONS.md` `COMPLIANCE.md` `SHIP_CHECKLIST.md` `SECURITY.md` `ANALYTICS.md`
+| File | Purpose |
+|------|---------|
+| `PLAN.md` | Phase status |
+| `HISTORY.md` | Changelog |
+| `FILEMAP.md` | This map |
+| `AGENT_RULES.md` | Agent constraints |
+| `OPERATIONS.md` | Runbook |
+| `COMPLIANCE.md` | Ledger and markets |
+| `SHIP_CHECKLIST.md` | Go-live |
+| `QA_NOTES.md` | QA |
+| `RELEASE_NOTES.md` | v1.0.0 |
+| `REFERENCES.md` | Third-party notes |
+| `SECURITY.md` | Headers and posture |
+| `ANALYTICS.md` | Event taxonomy |
+| `DEPLOY_RAILWAY.md` | Railway notes |

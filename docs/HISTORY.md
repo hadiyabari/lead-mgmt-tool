@@ -4,35 +4,28 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 21–23 – Polish, docs, ship readiness
+## [2026-10-03] Phase 24–26 – Final QA, release, closeout
 
-**Goal:** Usable operator surfaces and production readiness docs.
+**Goal:** Ship v1.0.0 documentation and close the phase plan.
 
-**Agent actions (21):**
-- `GET /api/leads` with status/search filters
-- Real leads list UI with draft-email action
-- Dashboard stats: qualified, outbox, sent, replies, meetings
-- Settings shows runtime flag presence (keys not values)
-
-**Agent actions (22):**
-- `docs/OPERATIONS.md`, `docs/COMPLIANCE.md`
-- PLAN/HISTORY/FILEMAP updated
-
-**Agent actions (23):**
-- `scripts/smoke.sh`
-- `docs/SHIP_CHECKLIST.md`
+**Agent actions:**
+- Phase 24: `docs/QA_NOTES.md` with static and manual QA steps
+- Phase 25: `docs/RELEASE_NOTES.md` for v1.0.0
+- Phase 26: version bump to 1.0.0, `docs/REFERENCES.md`, PLAN closed, root README updated
+- Confirmed analytics JSON meta cast remains in place for production builds
 
 **Achieved:**
-- Operators can browse leads and drive drafts from UI.
-- Ship path documented.
+- Phase plan 0–26 marked complete
+- Operators have release, ops, compliance, ship checklist, and QA guidance
 
-**Open items:**
-- Phase 24–25 final QA pass and release tag.
+**Open items / risks:**
+- Live registry discovery and calendar sync deferred post-v1
+- Railway deploy must keep migrate on container start only
 
-**Commit:** feat(phase-21-23): operator polish, docs overhaul, ship readiness
+**Commit:** release(v1.0.0): phases 24-26 final QA, release notes, ship closeout
 
 ---
 
 ## Prior
 
-Phases 0–20 on main.
+Phases 0–23 on main (pipeline, outbox, replies, meetings, campaigns, hardening, polish).
