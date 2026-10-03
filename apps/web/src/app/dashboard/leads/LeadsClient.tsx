@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
 type LeadItem = {
@@ -110,7 +111,9 @@ export function LeadsClient() {
             }}
           >
             <div>
-              <strong>{l.companyName}</strong>
+              <Link href={`/dashboard/leads/${l.id}`} style={{ color: '#e7ecf3', fontWeight: 600 }}>
+                {l.companyName}
+              </Link>
               <div style={{ color: '#8b9bb4', fontSize: 13, marginTop: 4 }}>
                 {l.status}
                 {l.domain ? ` · ${l.domain}` : ''}
@@ -121,26 +124,43 @@ export function LeadsClient() {
                 {l.scores?.[0] != null ? `Score ${l.scores[0].totalScore}` : 'No score'}
                 {l.auditResults?.[0] != null ? ` · Audit ${l.auditResults[0].score}` : ''}
               </div>
-              <div style={{ fontSize: 11, color: '#6b7a90', marginTop: 4 }}>ID {l.id}</div>
             </div>
-            {l.primaryEmail && (
-              <button
-                type="button"
-                disabled={busyId === l.id}
-                onClick={() => draftEmail(l.id)}
+            <div style={{ display: 'flex', gap: 6 }}>
+              <Link
+                href={`/dashboard/leads/${l.id}`}
                 style={{
-                  background: '#1a2d4a',
+                  background: '#121a26',
                   border: '1px solid #2d3a4f',
                   borderRadius: 8,
                   padding: '6px 10px',
                   color: '#e7ecf3',
-                  cursor: 'pointer',
+                  textDecoration: 'none',
                   height: 36,
+                  display: 'inline-flex',
+                  alignItems: 'center',
                 }}
               >
-                {busyId === l.id ? 'Drafting…' : 'Draft email'}
-              </button>
-            )}
+                Open
+              </Link>
+              {l.primaryEmail && (
+                <button
+                  type="button"
+                  disabled={busyId === l.id}
+                  onClick={() => draftEmail(l.id)}
+                  style={{
+                    background: '#1a2d4a',
+                    border: '1px solid #2d3a4f',
+                    borderRadius: 8,
+                    padding: '6px 10px',
+                    color: '#e7ecf3',
+                    cursor: 'pointer',
+                    height: 36,
+                  }}
+                >
+                  {busyId === l.id ? 'Drafting…' : 'Draft email'}
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>

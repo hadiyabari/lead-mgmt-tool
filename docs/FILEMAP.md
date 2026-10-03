@@ -1,8 +1,8 @@
 # FILEMAP
 
-## Phase 33
+## Phase 34
 
 | Path | Purpose |
 |------|---------|
-| `apps/web/src/app/api/team` | Team CRUD |
-| `apps/web/src/app/dashboard/team` | Team UI |
+| `apps/web/src/app/api/leads/[id]/route.ts` | Lead detail GET |
+| `apps/web/src/app/dashboard/leads/[id]` | Detail UI |
