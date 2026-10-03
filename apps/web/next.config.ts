@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     '@leadpilot/sources',
     '@leadpilot/audit',
     '@leadpilot/scoring',
+    '@leadpilot/email-gen',
   ],
   serverExternalPackages: ['argon2', '@prisma/client', 'prisma'],
 };

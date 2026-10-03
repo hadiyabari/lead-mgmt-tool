@@ -4,32 +4,29 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-09-28] Phase 12 – Scoring model + analytics taxonomy + security headers
+## [2026-10-03] Phase 13 – Grounded email generation
 
-**Goal:** Rank leads reproducibly; expand first-party analytics types; harden HTTP headers.
+**Goal:** Draft outreach only from verified lead facts and audit findings.
 
 **Agent actions:**
-- Package `@leadpilot/scoring`: weighted score (audit, rating, reviews, website, email, phone, job signal, ICP fit), normalized weights, breakdown with labels, qualified threshold, unit tests for reproducibility.
-- `POST /api/leads/[id]/score` persists LeadScore and updates lead status QUALIFIED/SCORED.
-- Analytics: event taxonomy (traffic, behavior, conversion, performance, content), `track()` client helper, BehaviorTracker (scroll depth, CTA/phone clicks, navigation timing).
-- Security: middleware applies CSP, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy, HSTS in production.
-- Admin analytics aggregates by event name and category.
-- docs/SECURITY.md, docs/ANALYTICS.md, PLAN/HISTORY updated.
+- Package `@leadpilot/email-gen`: allowed-facts builder, deterministic template writer, optional Anthropic path with fact-only prompt and template fallback.
+- `POST /api/leads/[id]/draft-email`: kill switch check, ledger never-contacted gate, playbook offer fields, creates EmailOutbox DRAFT with factsUsed JSON.
+- Unit tests for template output.
+- Web depends on email-gen; next.config transpilePackages updated; Dockerfile copies email-gen package.json.
 
 **Achieved:**
-- Same inputs yield same score; operators get breakdown details.
-- Consent-gated behavior and conversion events.
-- Baseline security headers on responses.
+- Simulation works without ANTHROPIC_API_KEY.
+- Drafts blocked when ledger match exists.
+- Facts used stored on outbox for auditability.
 
 **Open items:**
-- Weights UI for operators (API accepts weights body already).
-- Full Core Web Vitals (INP/CLS) library optional later.
-- External WAF/CDN remains operational concern.
+- Operator UI to preview/edit draft (Phase 14).
+- Live Anthropic requires ANTHROPIC_API_KEY and SIMULATION_MODE=false.
 
-**Commit:** feat(phase-12): scoring model + first-party analytics types + security headers
+**Commit:** feat(phase-13): grounded email generation from audit facts + outbox draft API
 
 ---
 
-## Prior entries
+## Prior
 
-Cookie consent, marketing site, phases 0–11 on main.
+Phases 0–12 on main.

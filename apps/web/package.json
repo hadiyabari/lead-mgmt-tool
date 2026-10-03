@@ -14,6 +14,7 @@
     "@auth/prisma-adapter": "^2.7.4",
     "@leadpilot/audit": "workspace:*",
     "@leadpilot/db": "workspace:*",
+    "@leadpilot/email-gen": "workspace:*",
     "@leadpilot/scoring": "workspace:*",
     "@leadpilot/shared": "workspace:*",
     "@leadpilot/sources": "workspace:*",

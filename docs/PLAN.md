@@ -15,8 +15,7 @@ Starter $100/mo · Growth $300/mo · Enterprise custom (all via Contact Sales).
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| 0–11 | Bootstrap through audit | **DONE** |
-| Marketing + legal + consent + SUPER_ADMIN | **DONE** |
-| 12 | Scoring model | **DONE** |
-| Analytics taxonomy + security headers | **DONE** |
-| 13–25 | Email through ship | Pending |
+| 0–12 | Bootstrap through scoring | **DONE** |
+| 13 | Grounded email generation | **DONE** |
+| 14 | Outbox queue, approval, send path | Pending |
+| 15–25 | Send, replies, booking, ship | Pending |

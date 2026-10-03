@@ -1,14 +1,10 @@
 # FILEMAP – LeadPilot Retainer Edition
 
-## Phase 12 / analytics / security
+## Phase 13
 
 | Path | Purpose |
 |------|---------|
-| `packages/scoring/src/score.ts` | Pure lead scoring |
-| `apps/web/src/app/api/leads/[id]/score` | Persist score |
-| `apps/web/src/lib/analytics-events.ts` | Event taxonomy |
-| `apps/web/src/lib/track.ts` | Consent-aware track() |
-| `apps/web/src/components/marketing/BehaviorTracker.tsx` | Scroll, CTA, vitals |
-| `apps/web/src/lib/security-headers.ts` | Header helpers |
-| `docs/SECURITY.md` | Security baseline |
-| `docs/ANALYTICS.md` | Analytics scope |
+| `packages/email-gen/src/facts.ts` | Allowed facts only |
+| `packages/email-gen/src/template.ts` | Deterministic writer |
+| `packages/email-gen/src/anthropic.ts` | Optional LLM path |
+| `apps/web/src/app/api/leads/[id]/draft-email/route.ts` | Draft API |
