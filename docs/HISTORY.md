@@ -4,28 +4,25 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 31 – Registry discover API
+## [2026-10-03] Phase 32 – Batch discover
 
-**Goal:** Wire built-in source adapters into an operator discover endpoint that can persist leads.
+**Goal:** Run discover across multiple primary sources in one request; tighten Sources UI.
 
 **Agent actions:**
-- `POST /api/sources/discover` runs primary adapter discover (NPI, Companies House, ABN, etc.)
-- Respects kill switch, simulation flag, workspace source enablement for live mode
-- Dedupes by domain; writes Lead rows as DISCOVERED
-- Records cost ledger entry
-- `GET /api/sources/adapters` lists registered adapters
+- `POST /api/sources/discover-batch` (enabled sources in live mode; all primary in simulation)
+- Sources UI: persist toggle, Discover one, Batch discover
+- Removed marketing-style guidance blurb from Sources page
 
 **Achieved:**
-- Discover path is no longer limited to hard-coded sample leads in the run executor.
+- Multi-source discovery with domain dedupe and cost ledger entries per provider.
 
 **Open items:**
-- Live keys: COMPANIES_HOUSE_API_KEY, ABN_LOOKUP_GUID, etc. still optional
-- Batch discover across all enabled sources
+- Live key QA per registry remains environment-specific.
 
-**Commit:** feat(phase-31): registry discover API + lead persistence from adapters
+**Commit:** feat(phase-32): batch discover across enabled sources + sources UI
 
 ---
 
 ## Prior
 
-Phases 0–30 on main.
+Phases 0–31 on main.

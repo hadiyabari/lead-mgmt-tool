@@ -1,8 +1,8 @@
 # FILEMAP
 
-## Phase 31
+## Phase 32
 
 | Path | Purpose |
 |------|---------|
-| `apps/web/src/app/api/sources/discover` | Run adapter discover + persist |
-| `apps/web/src/app/api/sources/adapters` | List adapters |
+| `apps/web/src/app/api/sources/discover-batch` | Multi-source discover |
+| `apps/web/src/app/dashboard/sources` | Operator UI |

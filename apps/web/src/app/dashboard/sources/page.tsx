@@ -8,11 +8,11 @@ export default async function SourcesPage() {
   if (!session?.user) redirect('/login');
 
   return (
-    <AppShell title="Sources" userEmail={session.user.email} userRole={session.user.role}>
-      <p style={{ margin: '0 0 1rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-        Official registry adapters. Enable sources, then run a simulated discover. Live calls need
-        API keys in env (Companies House, ABN GUID).
-      </p>
+    <AppShell
+      title="Sources"
+      userEmail={session.user.email}
+      userRole={(session.user as { role?: string }).role}
+    >
       <SourcesClient />
     </AppShell>
   );

@@ -18,6 +18,7 @@ export function SourcesClient() {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [persist, setPersist] = useState(true);
 
   const load = useCallback(async () => {
     const res = await fetch('/api/sources');
@@ -54,7 +55,7 @@ export function SourcesClient() {
           vertical: 'DENTAL_ORTHO',
           limit: 5,
           simulation: true,
-          persist: false,
+          persist,
         }),
       });
       const data = await res.json();
@@ -66,10 +67,36 @@ export function SourcesClient() {
     setLoading(false);
   }
 
+  async function runBatch() {
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    try {
+      const res = await fetch('/api/sources/discover-batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          vertical: 'DENTAL_ORTHO',
+          limitPerSource: 3,
+          simulation: true,
+          persist,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) setError(data.error || 'Batch failed');
+      else setResult(JSON.stringify(data, null, 2));
+    } catch {
+      setError('Network error');
+    }
+    setLoading(false);
+  }
+
+  const primaries = adapters.filter((a) => a.kind === 'primary');
+
   return (
     <>
       <div className="card" style={{ marginBottom: '1rem' }}>
-        <div className="card-label">Registered adapters</div>
+        <div className="card-label">Adapters</div>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
           <thead>
             <tr style={{ color: 'var(--text-muted)', textAlign: 'left' }}>
@@ -111,7 +138,15 @@ export function SourcesClient() {
       </div>
 
       <div className="card">
-        <div className="card-label">Simulated discover</div>
+        <div className="card-label">Discover</div>
+        <label style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
+          <input
+            type="checkbox"
+            checked={persist}
+            onChange={(e) => setPersist(e.target.checked)}
+          />
+          Persist leads
+        </label>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
           <select
             value={provider}
@@ -124,14 +159,17 @@ export function SourcesClient() {
               border: '1px solid var(--border)',
             }}
           >
-            {adapters.map((a) => (
+            {primaries.map((a) => (
               <option key={a.id} value={a.id}>
                 {a.name}
               </option>
             ))}
           </select>
           <button type="button" className="btn" disabled={loading} onClick={runDiscover}>
-            {loading ? 'Running…' : 'Run discover (simulation)'}
+            {loading ? 'Running…' : 'Discover one'}
+          </button>
+          <button type="button" className="btn" disabled={loading} onClick={runBatch}>
+            {loading ? 'Running…' : 'Batch discover'}
           </button>
         </div>
         {error && <p style={{ color: 'var(--danger)' }}>{error}</p>}
