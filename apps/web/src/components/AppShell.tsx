@@ -10,6 +10,7 @@ const NAV = [
   { href: '/dashboard/replies', label: 'Replies' },
   { href: '/dashboard/meetings', label: 'Meetings' },
   { href: '/dashboard/playbooks', label: 'Playbooks' },
+  { href: '/dashboard/sequences', label: 'Sequences' },
   { href: '/dashboard/runs', label: 'Runs' },
   { href: '/dashboard/campaigns', label: 'Campaigns' },
   { href: '/dashboard/ledger', label: 'Contact ledger' },

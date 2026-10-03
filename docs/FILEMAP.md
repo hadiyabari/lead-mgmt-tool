@@ -1,9 +1,9 @@
 # FILEMAP
 
-## Phase 40
+## Phase 41
 
 | Path | Purpose |
 |------|---------|
-| `apps/web/src/lib/mfa.ts` | TOTP helpers |
-| `apps/web/src/app/api/account/mfa/*` | Setup / confirm / disable / status |
-| `apps/web/src/app/settings/MfaForm.tsx` | UI |
+| `apps/web/src/app/api/admin/analytics/export` | CSV export |
+| `apps/web/src/app/api/sequences` | Sequence CRUD |
+| `apps/web/src/app/dashboard/sequences` | Sequences UI |

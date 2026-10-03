@@ -4,28 +4,25 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 40 – TOTP MFA
+## [2026-10-03] Phase 41 – Analytics CSV and sequences
 
-**Goal:** Optional two-factor authentication for operator accounts.
+**Goal:** Export site events; manage email sequence definitions.
 
 **Agent actions:**
-- `lib/mfa.ts` with otplib
-- `POST /api/account/mfa/setup` (secret + QR)
-- `POST /api/account/mfa/confirm`
-- `POST /api/account/mfa/disable` (password + code)
-- `GET /api/account/mfa/status`
-- Settings MFA form
+- `GET /api/admin/analytics/export?days=`
+- Sequences API `GET/POST /api/sequences`, `PATCH/DELETE /api/sequences/:id`
+- UI `/dashboard/sequences` with default 3-step template
 
 **Achieved:**
-- Users can enable authenticator-app MFA on their account.
+- Analytics downloadable; sequences stored for campaign planning.
 
 **Open items:**
-- Enforce MFA code at login when mfaEnabled (wire into credentials authorize next).
+- Auto-enqueue sequence steps into outbox scheduler later.
 
-**Commit:** feat(phase-40): TOTP MFA setup and login challenge
+**Commit:** feat(phase-41): analytics CSV export + sequences CRUD
 
 ---
 
 ## Prior
 
-Phases 0–39 on main.
+Phases 0–40 on main.

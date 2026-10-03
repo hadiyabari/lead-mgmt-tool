@@ -40,7 +40,7 @@ export function AnalyticsClient() {
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
         {[7, 30, 90].map((d) => (
           <button
             key={d}
@@ -58,6 +58,19 @@ export function AnalyticsClient() {
             {d}d
           </button>
         ))}
+        <a
+          href={`/api/admin/analytics/export?days=${days}`}
+          style={{
+            padding: '6px 10px',
+            borderRadius: 8,
+            border: '1px solid #2d3a4f',
+            background: '#1a2d4a',
+            color: '#e7ecf3',
+            textDecoration: 'none',
+          }}
+        >
+          Export CSV
+        </a>
       </div>
 
       {error && <p style={{ color: '#f87171' }}>{error}</p>}
