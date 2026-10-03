@@ -4,32 +4,35 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 19–20 – Hardening + e2e run
+## [2026-10-03] Phase 21–23 – Polish, docs, ship readiness
 
-**Goal:** Operational hardening and one-button simulated pipeline.
+**Goal:** Usable operator surfaces and production readiness docs.
 
-**Agent actions (19):**
-- Deep health: `GET /api/health?deep=1` probes Postgres
-- Cost ledger API `GET/POST /api/costs` + `recordCost` helper
-- Suppression list API `GET/POST /api/suppression`
+**Agent actions (21):**
+- `GET /api/leads` with status/search filters
+- Real leads list UI with draft-email action
+- Dashboard stats: qualified, outbox, sent, replies, meetings
+- Settings shows runtime flag presence (keys not values)
 
-**Agent actions (20):**
-- `POST /api/runs` create; `POST /api/runs/:id/execute` runs simulation pipeline:
-  create sample leads → audit → score → draft email (ledger gated)
-- Runs dashboard: start simulation run + log output
-- Respects kill switch and maxCredits
+**Agent actions (22):**
+- `docs/OPERATIONS.md`, `docs/COMPLIANCE.md`
+- PLAN/HISTORY/FILEMAP updated
+
+**Agent actions (23):**
+- `scripts/smoke.sh`
+- `docs/SHIP_CHECKLIST.md`
 
 **Achieved:**
-- Operators can prove the full loop without live providers.
+- Operators can browse leads and drive drafts from UI.
+- Ship path documented.
 
 **Open items:**
-- Live registry adapters in non-simulation execute path.
-- Cost UI panel (API ready).
+- Phase 24–25 final QA pass and release tag.
 
-**Commit:** feat(phase-19-20): hardening (health, costs, suppression) + e2e pipeline run
+**Commit:** feat(phase-21-23): operator polish, docs overhaul, ship readiness
 
 ---
 
 ## Prior
 
-Phases 0–18 on main.
+Phases 0–20 on main.

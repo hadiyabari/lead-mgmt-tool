@@ -4,7 +4,8 @@
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| 0–18 | Core product through campaigns | **DONE** |
-| 19 | Hardening (health, costs, suppression) | **DONE** |
-| 20 | E2E simulation pipeline run | **DONE** |
-| 21–25 | Polish, docs, ship | Pending |
+| 0–20 | Core through e2e simulation | **DONE** |
+| 21 | Operator polish (leads UI, dashboard stats) | **DONE** |
+| 22 | Docs (ops, compliance, filemap) | **DONE** |
+| 23 | Ship readiness (smoke, checklist) | **DONE** |
+| 24–25 | Final QA + release notes | Pending |

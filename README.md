@@ -1,5 +1,11 @@
 # LeadPilot Retainer Edition
 
-See **[docs/README.md](docs/README.md)** for the living product overview, status, and local development notes.
+Agency lead discovery, audit-grounded outreach, compliance-first contact ledger.
 
-This repository is managed under strict agent rules documented in `docs/AGENT_RULES.md`.
+**Phases 0–23 complete.** See `docs/` for plan, ops, and ship checklist.
+
+Contact Sales: **03293318181** · No public self-serve signup.
+
+```bash
+pnpm install && pnpm --filter @leadpilot/web dev
+```

@@ -13,37 +13,43 @@ export default async function SettingsPage() {
   const role = (session.user.role || 'VIEWER') as Role;
   const workspace = await prisma.workspace.findFirst({
     where: { id: session.user.workspaceId, deletedAt: null },
-    select: { killSwitch: true, name: true, primaryDomain: true, legalAddress: true },
   });
 
   const killActive = Boolean(workspace?.killSwitch) || process.env.KILL_SWITCH === 'true';
+  const simulation = process.env.SIMULATION_MODE !== 'false';
 
   return (
     <AppShell title="Settings" userEmail={session.user.email} userRole={role}>
-      <KillSwitch initialActive={killActive} canToggle={canToggleKillSwitch(role)} />
-
-      <div className="card" style={{ marginBottom: '1rem' }}>
+      <div className="card" style={{ marginBottom: 16 }}>
         <div className="card-label">Workspace</div>
-        <p style={{ margin: '0.25rem 0' }}>
+        <p style={{ margin: '0.35rem 0' }}>
           <strong>{workspace?.name}</strong>
         </p>
-        <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-          Domain: {workspace?.primaryDomain ?? '—'} · MFA:{' '}
-          {session.user.mfaEnabled ? 'enabled' : 'not enabled'}
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Slug: {workspace?.slug}</p>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+          Legal address: {workspace?.legalAddress || 'Not set'}
         </p>
-        {workspace?.legalAddress && (
-          <p style={{ margin: '0.5rem 0 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-            Legal footer: {workspace.legalAddress}
-          </p>
-        )}
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+          Primary domain: {workspace?.primaryDomain || 'Not set'}
+        </p>
       </div>
 
-      <div className="card">
-        <div className="card-label">Security</div>
-        <p style={{ margin: '0.35rem 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-          MFA enrollment UI can call <code>/api/auth/mfa/setup</code> and{' '}
-          <code>/api/auth/mfa/confirm</code> (Phase 4 APIs).
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="card-label">Runtime flags</div>
+        <p style={{ marginTop: 8 }}>
+          Simulation mode: {simulation ? 'ON' : 'OFF'}
         </p>
+        <p>Anthropic key: {process.env.ANTHROPIC_API_KEY ? 'configured' : 'not set'}</p>
+        <p>Postmark token: {process.env.POSTMARK_API_TOKEN ? 'configured' : 'not set'}</p>
+        <p>Inbound secret: {process.env.INBOUND_WEBHOOK_SECRET ? 'configured' : 'not set'}</p>
+      </div>
+
+      <KillSwitch initialActive={killActive} canToggle={canToggleKillSwitch(role)} />
+
+      <div className="card" style={{ marginTop: 16 }}>
+        <div className="card-label">Your account</div>
+        <p style={{ marginTop: 8 }}>{session.user.email}</p>
+        <p style={{ color: 'var(--text-muted)' }}>Role: {role}</p>
       </div>
     </AppShell>
   );
