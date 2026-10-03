@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma, fourPointCheck } from '@leadpilot/db';
 import { runAudit } from '@leadpilot/audit';
-import { scoreLead } from '@leadpilot/scoring';
+import { computeLeadScore } from '@leadpilot/scoring';
 import { generateEmail } from '@leadpilot/email-gen';
 import { recordCost } from '@/lib/cost';
 import type { Role, Prisma } from '@leadpilot/db';
@@ -10,8 +10,7 @@ import { canStartRuns } from '@/lib/rbac';
 
 /**
  * Phase 20 – end-to-end simulated pipeline for one run.
- * Steps: pick/create sample leads → audit → score → draft email (if email + ledger ok).
- * Always respects kill switch, maxCredits, and ledger.
+ * Steps: create sample leads → audit → score → draft email (if email + ledger ok).
  */
 export async function POST(
   _req: Request,
@@ -57,154 +56,144 @@ export async function POST(
   const goal = run.goalLeadCount ?? 5;
 
   try {
-    // Seed a few simulation leads if workspace is empty of DISCOVERED/SCORED
-    const existing = await prisma.lead.count({
-      where: { workspaceId: session.user.workspaceId, deletedAt: null },
-    });
+    const samples = [
+      {
+        companyName: 'Bright Smile Dental',
+        domain: 'brightsmile.example',
+        website: 'https://brightsmile.example',
+        primaryEmail: `brightsmile+${Date.now()}@example.com`,
+        city: 'Austin',
+        region: 'TX',
+        country: 'US' as const,
+        vertical: 'DENTAL_ORTHO' as const,
+      },
+      {
+        companyName: 'Summit Home Pros',
+        domain: 'summithome.example',
+        website: 'https://summithome.example',
+        primaryEmail: `summit+${Date.now()}@example.com`,
+        city: 'Denver',
+        region: 'CO',
+        country: 'US' as const,
+        vertical: 'HOME_SERVICES' as const,
+      },
+      {
+        companyName: 'Luxe Aesthetic Clinic',
+        domain: 'luxeclinic.example',
+        website: 'https://luxeclinic.example',
+        primaryEmail: `luxe+${Date.now()}@example.com`,
+        city: 'Miami',
+        region: 'FL',
+        country: 'US' as const,
+        vertical: 'AESTHETIC_MEDSPA' as const,
+      },
+    ].slice(0, goal);
 
-    if (existing === 0 || run.isSimulation) {
-      const samples = [
-        {
-          companyName: 'Bright Smile Dental',
-          domain: 'brightsmile.example',
-          website: 'https://brightsmile.example',
-          primaryEmail: `brightsmile+${Date.now()}@example.com`,
-          city: 'Austin',
-          region: 'TX',
-          country: 'US' as const,
-          vertical: 'DENTAL_ORTHO' as const,
-        },
-        {
-          companyName: 'Summit Home Pros',
-          domain: 'summithome.example',
-          website: 'https://summithome.example',
-          primaryEmail: `summit+${Date.now()}@example.com`,
-          city: 'Denver',
-          region: 'CO',
-          country: 'US' as const,
-          vertical: 'HOME_SERVICES' as const,
-        },
-        {
-          companyName: 'Luxe Aesthetic Clinic',
-          domain: 'luxeclinic.example',
-          website: 'https://luxeclinic.example',
-          primaryEmail: `luxe+${Date.now()}@example.com`,
-          city: 'Miami',
-          region: 'FL',
-          country: 'US' as const,
-          vertical: 'AESTHETIC_MEDSPA' as const,
-        },
-      ].slice(0, goal);
+    for (const s of samples) {
+      if (creditsUsed >= maxCredits) break;
 
-      for (const s of samples) {
-        if (creditsUsed >= maxCredits) break;
-        const lead = await prisma.lead.create({
+      const lead = await prisma.lead.create({
+        data: {
+          workspaceId: session.user.workspaceId,
+          ...s,
+          status: 'DISCOVERED',
+          sourceProvider: 'CUSTOM',
+          sourceMeta: { runId: id, simulation: true },
+        },
+      });
+      leadsFound += 1;
+      creditsUsed += 1;
+      log.push(`created lead ${lead.companyName}`);
+
+      const audit = await runAudit(s.website, { simulation: true });
+      await prisma.auditResult.create({
+        data: {
+          leadId: lead.id,
+          url: s.website,
+          score: audit.score,
+          findings: audit.findings as unknown as Prisma.InputJsonValue,
+          rawReport: audit.raw as Prisma.InputJsonValue,
+        },
+      });
+      await recordCost({
+        workspaceId: session.user.workspaceId,
+        category: 'AUDIT',
+        provider: 'simulation',
+        units: 1,
+        unitCost: 0,
+        runId: id,
+      });
+      creditsUsed += 1;
+
+      const scored = computeLeadScore({
+        auditScore: audit.score,
+        hasWebsite: true,
+        hasEmail: true,
+        hasPhone: false,
+      });
+      await prisma.leadScore.create({
+        data: {
+          leadId: lead.id,
+          totalScore: scored.totalScore,
+          breakdown: scored.breakdown as unknown as Prisma.InputJsonValue,
+          weightsUsed: scored.weightsUsed as unknown as Prisma.InputJsonValue,
+        },
+      });
+      await prisma.lead.update({
+        where: { id: lead.id },
+        data: { status: scored.qualified ? 'QUALIFIED' : 'SCORED' },
+      });
+      if (scored.qualified) leadsQualified += 1;
+      log.push(`scored ${lead.companyName}: ${scored.totalScore}`);
+
+      const gate = await fourPointCheck(session.user.workspaceId, {
+        email: s.primaryEmail,
+        domain: s.domain,
+      });
+      if (gate.allowed) {
+        const generated = await generateEmail({
+          companyName: s.companyName,
+          website: s.website,
+          domain: s.domain,
+          city: s.city,
+          region: s.region,
+          country: s.country,
+          vertical: s.vertical,
+          auditScore: audit.score,
+          findings: audit.findings.map((f) => ({
+            title: f.title,
+            severity: f.severity,
+            category: f.category,
+            description: f.description,
+          })),
+          agencyName: workspace.name,
+          legalAddress: workspace.legalAddress,
+          simulation: true,
+        });
+        await prisma.emailOutbox.create({
           data: {
             workspaceId: session.user.workspaceId,
-            ...s,
-            status: 'DISCOVERED',
-            sourceProvider: 'CUSTOM',
-            sourceMeta: { runId: id, simulation: true },
-          },
-        });
-        leadsFound += 1;
-        creditsUsed += 1;
-        log.push(`created lead ${lead.companyName}`);
-
-        // Audit
-        const audit = await runAudit(s.website, { simulation: true });
-        await prisma.auditResult.create({
-          data: {
             leadId: lead.id,
-            url: s.website,
-            score: audit.score,
-            findings: audit.findings as unknown as Prisma.InputJsonValue,
-            rawReport: audit.raw as Prisma.InputJsonValue,
+            toEmail: s.primaryEmail,
+            subject: generated.subject,
+            bodyHtml: generated.bodyHtml,
+            bodyText: generated.bodyText,
+            factsUsed: generated.factsUsed as unknown as Prisma.InputJsonValue,
+            status: 'DRAFT',
+            isSimulation: true,
           },
         });
         await recordCost({
           workspaceId: session.user.workspaceId,
-          category: 'AUDIT',
-          provider: 'simulation',
+          category: 'LLM',
+          provider: generated.model || 'template',
           units: 1,
           unitCost: 0,
           runId: id,
         });
-        creditsUsed += 1;
-
-        // Score
-        const scored = scoreLead({
-          auditScore: audit.score,
-          hasWebsite: true,
-          hasEmail: true,
-          hasPhone: false,
-        });
-        await prisma.leadScore.create({
-          data: {
-            leadId: lead.id,
-            totalScore: scored.totalScore,
-            breakdown: scored.breakdown as unknown as Prisma.InputJsonValue,
-            weightsUsed: scored.weightsUsed as unknown as Prisma.InputJsonValue,
-          },
-        });
-        const qualified = scored.totalScore >= (scored.qualifiedThreshold ?? 55);
-        await prisma.lead.update({
-          where: { id: lead.id },
-          data: { status: qualified ? 'QUALIFIED' : 'SCORED' },
-        });
-        if (qualified) leadsQualified += 1;
-        log.push(`scored ${lead.companyName}: ${scored.totalScore}`);
-
-        // Draft email if ledger allows
-        const gate = await fourPointCheck(session.user.workspaceId, {
-          email: s.primaryEmail,
-          domain: s.domain,
-        });
-        if (gate.allowed) {
-          const generated = await generateEmail({
-            companyName: s.companyName,
-            website: s.website,
-            domain: s.domain,
-            city: s.city,
-            region: s.region,
-            country: s.country,
-            vertical: s.vertical,
-            auditScore: audit.score,
-            findings: audit.findings.map((f) => ({
-              title: f.title,
-              severity: f.severity,
-              category: f.category,
-              description: f.description,
-            })),
-            agencyName: workspace.name,
-            legalAddress: workspace.legalAddress,
-            simulation: true,
-          });
-          await prisma.emailOutbox.create({
-            data: {
-              workspaceId: session.user.workspaceId,
-              leadId: lead.id,
-              toEmail: s.primaryEmail,
-              subject: generated.subject,
-              bodyHtml: generated.bodyHtml,
-              bodyText: generated.bodyText,
-              factsUsed: generated.factsUsed as unknown as Prisma.InputJsonValue,
-              status: 'DRAFT',
-              isSimulation: true,
-            },
-          });
-          await recordCost({
-            workspaceId: session.user.workspaceId,
-            category: 'LLM',
-            provider: generated.model || 'template',
-            units: 1,
-            unitCost: 0,
-            runId: id,
-          });
-          log.push(`draft email for ${lead.companyName}`);
-        } else {
-          log.push(`skipped draft for ${lead.companyName}: ${gate.reason}`);
-        }
+        log.push(`draft email for ${lead.companyName}`);
+      } else {
+        log.push(`skipped draft for ${lead.companyName}: ${gate.reason}`);
       }
     }
 
