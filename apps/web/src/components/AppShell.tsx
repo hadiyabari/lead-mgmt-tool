@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 const NAV = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/dashboard/leads', label: 'Leads' },
+  { href: '/dashboard/icps', label: 'ICPs' },
   { href: '/dashboard/sources', label: 'Sources' },
   { href: '/dashboard/outbox', label: 'Outbox' },
   { href: '/dashboard/replies', label: 'Replies' },
@@ -26,6 +27,8 @@ export function AppShell({
   userEmail?: string | null;
   userRole?: string | null;
 }) {
+  const showAdmin = userRole === 'SUPER_ADMIN';
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -39,6 +42,11 @@ export function AppShell({
               <Link href={item.href}>{item.label}</Link>
             </li>
           ))}
+          {showAdmin && (
+            <li>
+              <Link href="/admin/tenants">Tenants</Link>
+            </li>
+          )}
         </ul>
         <div className="sidebar-footer">
           {userEmail && <div>{userEmail}</div>}

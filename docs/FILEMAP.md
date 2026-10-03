@@ -1,9 +1,11 @@
 # FILEMAP
 
-## Phase 27
+## Phase 29
 
 | Path | Purpose |
 |------|---------|
-| `apps/web/src/app/api/outbox/bulk` | Bulk transitions |
-| `apps/web/src/app/api/playbooks` | Playbook CRUD |
-| `apps/web/src/app/dashboard/playbooks` | UI |
+| `apps/web/src/app/api/icps` | ICP CRUD |
+| `apps/web/src/app/dashboard/icps` | ICP UI |
+| `apps/web/src/app/api/admin/workspaces` | SUPER_ADMIN tenants |
+| `apps/web/src/app/api/admin/users` | SUPER_ADMIN users |
+| `apps/web/src/app/admin/tenants` | Tenant UI |

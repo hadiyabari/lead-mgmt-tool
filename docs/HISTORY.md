@@ -4,27 +4,27 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 27 – Bulk outbox + playbooks
+## [2026-10-03] Phase 29 – ICPs + SUPER_ADMIN provisioning
 
-**Goal:** Post-v1 operator throughput: bulk outbox actions and playbook CRUD.
+**Goal:** Tenant ICP management and platform-level workspace creation.
 
 **Agent actions:**
-- `POST /api/outbox/bulk` for submit, approve, reject, send (max 50 ids; send reuses ledger gates)
-- Outbox UI selection + bulk buttons
-- `GET/POST /api/playbooks`, `PATCH/DELETE /api/playbooks/:id`
-- Dashboard `/dashboard/playbooks`
+- `GET/POST /api/icps`, `PATCH/DELETE /api/icps/:id`
+- Dashboard `/dashboard/icps`
+- `GET/POST /api/admin/workspaces` (SUPER_ADMIN only) creates workspace + OWNER
+- `POST /api/admin/users` (SUPER_ADMIN only)
+- `/admin/tenants` UI; nav link for SUPER_ADMIN only
 
 **Achieved:**
-- Operators can approve/send batches without one-by-one clicks
-- Offer copy managed via playbooks for drafts
+- Multi-tenant provisioning path matches product rules (no public signup).
 
 **Open items:**
-- Live registry discovery still optional Phase 28+
+- Promote a seeded SUPER_ADMIN user when needed (role assign via DB or admin API).
 
-**Commit:** feat(phase-27): bulk outbox actions + playbook CRUD
+**Commit:** feat(phase-29): ICP management + SUPER_ADMIN workspace provisioning
 
 ---
 
 ## Prior
 
-v1.0.0 phases 0–26 on main.
+Phases 0–27 on main.
