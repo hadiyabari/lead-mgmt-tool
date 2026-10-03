@@ -15,7 +15,7 @@ Starter $100/mo · Growth $300/mo · Enterprise custom (all via Contact Sales).
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| 0–12 | Bootstrap through scoring | **DONE** |
-| 13 | Grounded email generation | **DONE** |
-| 14 | Outbox queue, approval, send path | Pending |
-| 15–25 | Send, replies, booking, ship | Pending |
+| 0–13 | Bootstrap through grounded email | **DONE** |
+| 14 | Outbox queue and approval | **DONE** |
+| 15 | Send path (simulation + Postmark) | **DONE** |
+| 16–25 | Replies, booking, hardening, ship | Pending |

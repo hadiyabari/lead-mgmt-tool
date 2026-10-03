@@ -1,17 +1,7 @@
 # LeadPilot Retainer Edition
 
-Multi-tenant agency product. Contact Sales: **03293318181**. No public signup.
+Phases 0–15 complete.
 
-## Status
+Outbox: `/dashboard/outbox`
 
-Phases 0–13 complete (includes grounded email drafts).
-
-```bash
-pnpm install && pnpm docker:up
-cp .env.example .env
-pnpm --filter @leadpilot/db db:migrate
-pnpm --filter @leadpilot/email-gen test
-pnpm --filter @leadpilot/web dev
-```
-
-Draft email: `POST /api/leads/:id/draft-email`
+Flow: draft-email → submit/approve → send (simulation unless POSTMARK_API_TOKEN and SIMULATION_MODE=false).

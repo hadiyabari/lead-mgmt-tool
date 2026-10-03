@@ -5,6 +5,7 @@ const NAV = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/dashboard/leads', label: 'Leads' },
   { href: '/dashboard/sources', label: 'Sources' },
+  { href: '/dashboard/outbox', label: 'Outbox' },
   { href: '/dashboard/runs', label: 'Runs' },
   { href: '/dashboard/campaigns', label: 'Campaigns' },
   { href: '/dashboard/ledger', label: 'Contact ledger' },

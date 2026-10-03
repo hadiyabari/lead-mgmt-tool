@@ -4,29 +4,33 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 13 – Grounded email generation
+## [2026-10-03] Phase 14–15 – Outbox approval + send path
 
-**Goal:** Draft outreach only from verified lead facts and audit findings.
+**Goal:** Review queue for drafts; send only after approval with final ledger gate.
 
-**Agent actions:**
-- Package `@leadpilot/email-gen`: allowed-facts builder, deterministic template writer, optional Anthropic path with fact-only prompt and template fallback.
-- `POST /api/leads/[id]/draft-email`: kill switch check, ledger never-contacted gate, playbook offer fields, creates EmailOutbox DRAFT with factsUsed JSON.
-- Unit tests for template output.
-- Web depends on email-gen; next.config transpilePackages updated; Dockerfile copies email-gen package.json.
+**Agent actions (14):**
+- Outbox list API with status filter and counts
+- submit (DRAFT→PENDING_REVIEW), approve, reject, PATCH edit
+- Dashboard `/dashboard/outbox` with actions
+
+**Agent actions (15):**
+- Package `@leadpilot/email-send` (simulation default, Postmark when token set)
+- Send API: claim APPROVED row, fourPointCheck, send, EmailSent record, lead CONTACTED, ledgerInsert OUTBOUND_SEND
+- Kill switch blocks send
+- Row lock via lockedAt/lockedBy
 
 **Achieved:**
-- Simulation works without ANTHROPIC_API_KEY.
-- Drafts blocked when ledger match exists.
-- Facts used stored on outbox for auditability.
+- Full draft → review → approve → send loop in simulation
+- Never-contacted enforced at send time again
 
 **Open items:**
-- Operator UI to preview/edit draft (Phase 14).
-- Live Anthropic requires ANTHROPIC_API_KEY and SIMULATION_MODE=false.
+- Bulk approve/send
+- Reply ingestion (Phase 16+)
 
-**Commit:** feat(phase-13): grounded email generation from audit facts + outbox draft API
+**Commit:** feat(phase-14-15): outbox review queue + send path with ledger gate
 
 ---
 
 ## Prior
 
-Phases 0–12 on main.
+Phases 0–13 on main.

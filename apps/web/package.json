@@ -15,6 +15,7 @@
     "@leadpilot/audit": "workspace:*",
     "@leadpilot/db": "workspace:*",
     "@leadpilot/email-gen": "workspace:*",
+    "@leadpilot/email-send": "workspace:*",
     "@leadpilot/scoring": "workspace:*",
     "@leadpilot/shared": "workspace:*",
     "@leadpilot/sources": "workspace:*",
