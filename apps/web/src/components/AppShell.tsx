@@ -30,6 +30,8 @@ export function AppShell({
 }) {
   const showAdmin = userRole === 'SUPER_ADMIN';
   const showTeam = userRole === 'OWNER' || userRole === 'ADMIN' || userRole === 'SUPER_ADMIN';
+  const showAnalytics =
+    userRole === 'OWNER' || userRole === 'ADMIN' || userRole === 'SUPER_ADMIN';
 
   return (
     <div className="app-shell">
@@ -44,6 +46,11 @@ export function AppShell({
               <Link href={item.href}>{item.label}</Link>
             </li>
           ))}
+          {showAnalytics && (
+            <li>
+              <Link href="/admin/analytics">Site analytics</Link>
+            </li>
+          )}
           {showAdmin && (
             <li>
               <Link href="/admin/tenants">Tenants</Link>

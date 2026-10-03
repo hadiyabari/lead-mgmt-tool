@@ -4,25 +4,25 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 34 – Lead detail
+## [2026-10-03] Phase 35 – Site analytics dashboard
 
-**Goal:** Single-lead operator view with pipeline actions.
+**Goal:** Operator view of first-party marketing SiteEvent data.
 
 **Agent actions:**
-- `GET /api/leads/:id` with scores, audits, enrichments, outbox, sent, replies, meetings
-- Page `/dashboard/leads/[id]` with Enrich, Audit, Score, Draft email actions
-- Leads list links to detail
+- `GET /api/admin/analytics?days=7|30|90`
+- Totals, unique sessions, by event name, path, UTM source, recent stream
+- UI `/admin/analytics` for OWNER/ADMIN/SUPER_ADMIN
 
 **Achieved:**
-- Full lead timeline in one place without hopping pages blindly.
+- Marketing traffic visibility without third-party dashboard dependency.
 
 **Open items:**
-- Inline meeting book from lead detail remains optional.
+- Export CSV optional later.
 
-**Commit:** feat(phase-34): lead detail page + GET lead API
+**Commit:** feat(phase-35): admin site analytics dashboard
 
 ---
 
 ## Prior
 
-Phases 0–33 on main.
+Phases 0–34 on main.
