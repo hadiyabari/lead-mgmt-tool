@@ -17,14 +17,22 @@ export async function GET(
     include: {
       scores: { orderBy: { scoredAt: 'desc' }, take: 5 },
       auditResults: { orderBy: { auditedAt: 'desc' }, take: 5 },
-      enrichments: { orderBy: { createdAt: 'desc' }, take: 10 },
+      enrichments: { orderBy: { enrichedAt: 'desc' }, take: 10 },
       outbox: { orderBy: { updatedAt: 'desc' }, take: 10 },
-      sentEmails: { orderBy: { sentAt: 'desc' }, take: 10 },
+      sent: { orderBy: { sentAt: 'desc' }, take: 10 },
       replies: { orderBy: { receivedAt: 'desc' }, take: 10 },
       meetings: { orderBy: { startsAt: 'desc' }, take: 10 },
     },
   });
 
   if (!lead) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-  return NextResponse.json({ lead });
+
+  // Normalize for UI (sentEmails alias)
+  const { sent, ...rest } = lead;
+  return NextResponse.json({
+    lead: {
+      ...rest,
+      sentEmails: sent,
+    },
+  });
 }

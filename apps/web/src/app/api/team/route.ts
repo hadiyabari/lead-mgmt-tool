@@ -21,7 +21,6 @@ export async function GET() {
       name: true,
       role: true,
       createdAt: true,
-      lastLoginAt: true,
     },
   });
 
@@ -35,7 +34,7 @@ const createSchema = z.object({
   password: z.string().min(10).max(128),
 });
 
-/** OWNER/ADMIN create users inside their own workspace only. Cannot create SUPER_ADMIN or OWNER via this route. */
+/** OWNER/ADMIN create users inside their own workspace only. */
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.workspaceId) {
