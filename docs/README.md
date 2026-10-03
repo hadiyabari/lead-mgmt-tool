@@ -1,5 +1,11 @@
 # LeadPilot Retainer Edition
 
-Phases 0–18 complete.
+Phases 0–20 complete.
 
-Meetings: `/dashboard/meetings` · Campaigns: `/dashboard/campaigns`
+```bash
+# Deep health
+curl "$URL/api/health?deep=1"
+
+# Simulation pipeline (authenticated)
+POST /api/runs → POST /api/runs/:id/execute
+```

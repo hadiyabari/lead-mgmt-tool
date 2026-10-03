@@ -4,31 +4,32 @@ Living changelog. Newest entries at the top.
 
 ---
 
-## [2026-10-03] Phase 17–18 – Meetings + campaigns
+## [2026-10-03] Phase 19–20 – Hardening + e2e run
 
-**Goal:** Book meetings from pipeline; manage campaigns and attach outbox.
+**Goal:** Operational hardening and one-button simulated pipeline.
 
-**Agent actions (17):**
-- `GET/POST /api/meetings`, `PATCH /api/meetings/:id`
-- Lead status MEETING_BOOKED on create; WON/LOST on completed/cancelled/no-show
-- Dashboard `/dashboard/meetings`
+**Agent actions (19):**
+- Deep health: `GET /api/health?deep=1` probes Postgres
+- Cost ledger API `GET/POST /api/costs` + `recordCost` helper
+- Suppression list API `GET/POST /api/suppression`
 
-**Agent actions (18):**
-- `GET/POST /api/campaigns`, `PATCH` status (ACTIVE blocked by kill switch)
-- `POST /api/campaigns/:id/attach-outbox`
-- Real campaigns UI (replaced placeholder)
+**Agent actions (20):**
+- `POST /api/runs` create; `POST /api/runs/:id/execute` runs simulation pipeline:
+  create sample leads → audit → score → draft email (ledger gated)
+- Runs dashboard: start simulation run + log output
+- Respects kill switch and maxCredits
 
 **Achieved:**
-- Meeting and campaign operator flows live.
+- Operators can prove the full loop without live providers.
 
 **Open items:**
-- External calendar sync (Google/Outlook) later.
-- Auto-draft batch into campaign from qualified leads.
+- Live registry adapters in non-simulation execute path.
+- Cost UI panel (API ready).
 
-**Commit:** feat(phase-17-18): meetings booking + campaign activation
+**Commit:** feat(phase-19-20): hardening (health, costs, suppression) + e2e pipeline run
 
 ---
 
 ## Prior
 
-Phases 0–16 on main.
+Phases 0–18 on main.

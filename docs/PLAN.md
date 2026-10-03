@@ -4,7 +4,7 @@
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| 0–16 | Bootstrap through replies | **DONE** |
-| 17 | Meeting booking | **DONE** |
-| 18 | Campaign activation | **DONE** |
-| 19–25 | Hardening, e2e, ship | Pending |
+| 0–18 | Core product through campaigns | **DONE** |
+| 19 | Hardening (health, costs, suppression) | **DONE** |
+| 20 | E2E simulation pipeline run | **DONE** |
+| 21–25 | Polish, docs, ship | Pending |
